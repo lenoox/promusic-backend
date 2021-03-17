@@ -1,38 +1,15 @@
-package com.lenoox.promusic.users.models;
+package com.lenoox.promusic.users.Param;
 
-
-import com.lenoox.promusic.common.models.Auditable;
-
-import javax.persistence.*;
-import java.io.Serializable;
-
-@Entity
-@Table(name = "users")
-public class User extends Auditable<String> implements Serializable {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "user_id")
+public class UserParam {
     private long id;
-    @Column(name = "first_name")
     private String firstName;
-    @Column(name = "last_name")
     private String lastName;
-    @Column(name = "email")
-    private String email;
-    @Column(name = "password")
     private String password;
-    @Column(name = "address")
+    private String email;
     private String address;
-    @Column(name = "phone_number")
     private String phoneNumber;
-    @Column(name = "city")
     private String city;
-    @Column(name = "active")
-    private Boolean active;
 
-    @ManyToOne()
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
 
     public long getId() {
         return id;
@@ -58,20 +35,20 @@ public class User extends Auditable<String> implements Serializable {
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAddress() {
@@ -98,19 +75,4 @@ public class User extends Auditable<String> implements Serializable {
         this.city = city;
     }
 
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 }

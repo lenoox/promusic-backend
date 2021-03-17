@@ -23,24 +23,24 @@ public class BrandController {
 
     @GetMapping
     public ApiResponse getAll(@PageableDefault(page = 0, size = 10) Pageable pageable){
-        return new ApiResponse(HttpStatus.OK, SUCCESS, brandService.getAll(pageable));
+        return new ApiResponse(HttpStatus.OK, brandService.getAll(pageable));
     }
     @GetMapping(value = "/{id}")
     public ApiResponse getById(@PathVariable(value = "id") Long id){
-        return new ApiResponse(HttpStatus.OK, SUCCESS, brandService.getById(id));
+        return new ApiResponse(HttpStatus.OK, brandService.getById(id));
     }
     @PostMapping
     public ApiResponse create(@RequestBody BrandParam brand){
-        return new ApiResponse(HttpStatus.OK, SUCCESS, brandService.create(brand));
+        return new ApiResponse(HttpStatus.OK, brandService.create(brand));
     }
     @PutMapping(value = "/{id}")
     public ApiResponse update(@PathVariable(value = "id") Long id,
                               @RequestBody BrandParam brand){
-        return new ApiResponse(HttpStatus.OK, SUCCESS, brandService.update(id,brand));
+        return new ApiResponse(HttpStatus.OK, brandService.update(id,brand));
     }
     @DeleteMapping(value = "/{id}")
     public ApiResponse delete(@PathVariable(value = "id") Long id){
         brandService.delete(id);
-        return new ApiResponse(HttpStatus.OK, SUCCESS, "deleted successfully");
+        return new ApiResponse(HttpStatus.OK, "deleted successfully");
     }
 }

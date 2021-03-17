@@ -1,6 +1,7 @@
 package com.lenoox.promusic.users.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lenoox.promusic.common.models.RoleType;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -17,7 +18,7 @@ public class Role {
     @Column(name = "role_name")
     private RoleType name;
     @JsonIgnore
-    @OneToMany(mappedBy = "roles", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private Set<User> users;
     public long getId() {

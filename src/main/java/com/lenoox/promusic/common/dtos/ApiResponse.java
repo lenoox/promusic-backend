@@ -4,35 +4,20 @@ import org.springframework.http.HttpStatus;
 
 public class ApiResponse {
 
-    private int status;
-    private String message;
+    private HttpStatus status;
     private Object result;
 
-    public ApiResponse(HttpStatus status, String message, Object result){
-        this.status = status.value();
-        this.message = message;
+    public ApiResponse(HttpStatus status, Object result){
+        this.status = status;
         this.result = result;
     }
 
-    public ApiResponse(HttpStatus status, String message){
-        this.status = status.value();
-        this.message = message;
-    }
-
-    public int getStatus() {
+    public HttpStatus  getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(HttpStatus status) {
         this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public Object getResult() {
@@ -45,7 +30,7 @@ public class ApiResponse {
 
     @Override
     public String toString() {
-        return "ApiResponse [statusCode=" + status + ", message=" + message +"]";
+        return "ApiResponse [statusCode=" + status + ", result=" + result +"]";
     }
 
 

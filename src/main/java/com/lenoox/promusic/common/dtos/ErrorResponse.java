@@ -4,48 +4,33 @@ import org.springframework.http.HttpStatus;
 
 public class ErrorResponse {
 
-    private int status;
-    private String message;
-    private Object result;
+    private HttpStatus  status;
+    private String error;
 
-    public ErrorResponse(HttpStatus status, String message, Object result){
-        this.status = status.value();
-        this.message = message;
-        this.result = result;
+    public ErrorResponse(HttpStatus status, String error) {
+        this.status = status;
+        this.error = error;
     }
 
-    public ErrorResponse(HttpStatus status, String message){
-        this.status = status.value();
-        this.message = message;
-    }
-
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(HttpStatus status) {
         this.status = status;
     }
 
-    public String getMessage() {
-        return message;
+    public String getError() {
+        return error;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Object getResult() {
-        return result;
-    }
-
-    public void setResult(Object result) {
-        this.result = result;
+    public void setError(String error) {
+        this.error = error;
     }
 
     @Override
     public String toString() {
-        return "ApiResponse [statusCode=" + status + ", message=" + message +"]";
+        return "ApiResponse [statusCode=" + status + ", message=" + error +"]";
     }
 
 

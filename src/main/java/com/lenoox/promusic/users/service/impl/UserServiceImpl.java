@@ -1,12 +1,16 @@
 package com.lenoox.promusic.users.service.impl;
 
+import com.lenoox.promusic.common.models.RoleType;
+import com.lenoox.promusic.users.Param.UserParam;
 import com.lenoox.promusic.users.dtos.UserDto;
+import com.lenoox.promusic.users.dtos.UserWithRolesDTO;
 import com.lenoox.promusic.users.models.Role;
-import com.lenoox.promusic.users.models.RoleType;
+
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.RoleRepository;
 import com.lenoox.promusic.users.repository.UserRepository;
 import com.lenoox.promusic.users.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,16 +36,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private static final String emailDomainAuth = "@gmail.com";
 
     @Autowired
-    private UserRepository userDao;
+    private UserRepository userRepository;
 
     @Autowired
-    private RoleRepository roleDao;
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userDao.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if(user == null){
             log.error("Invalid username or password.");
             throw new UsernameNotFoundException("Invalid username or password.");
@@ -54,58 +60,61 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     private Set<GrantedAuthority> getAuthorities(User user) {
 
-        Role roleByUserId = user.getRoles();
+        Role roleByUserId = user.getRole();
         final Set<GrantedAuthority> authorities = roleByUserId.getUsers().stream().map(role ->{
-                    log.info(role.getRoles().getName().toString().toUpperCase());
-                   return new SimpleGrantedAuthority("ROLE_" + role.getRoles().getName().toString().toUpperCase());
+            log.info(role.getRole().getName().toString().toUpperCase());
+            return new SimpleGrantedAuthority("ROLE_" + role.getRole().getName().toString().toUpperCase());
         }
 
         ).collect(Collectors.toSet());
         return authorities;
     }
 
-    public List<UserDto> findAll() {
-        List<UserDto> users = new ArrayList<>();
-        userDao.findAll().iterator().forEachRemaining(user -> users.add(user.toUserDto()));
-        return users;
+    public List<UserDto> getAll() {
+        return userRepository
+                .findAll()
+                .stream()
+                .map(User -> modelMapper.map(User, UserDto.class))
+                .collect(Collectors.toList());
     }
 
-    public User findEmail(String email) {
-        return userDao.findByEmail(email);
+    public UserWithRolesDTO getByEamil(String email) {
+
+        User user = userRepository.findByEmail(email);
+        UserWithRolesDTO userWithRolesDTO = new UserWithRolesDTO();
+        modelMapper.map(user, userWithRolesDTO);
+        return userWithRolesDTO;
     }
 
     @Override
     public void delete(long id) {
-        userDao.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
-    public UserDto save(UserDto userDto) {
-       // User userWithDuplicateUsername = userDao.findByUsername(userDto.getUsername());
-       // if(userWithDuplicateUsername != null && userDto.getId() != userWithDuplicateUsername.getId()) {
-       //     log.error(String.format("Duplicate username %", userDto.getUsername()));
-       //     throw new RuntimeException("Duplicate username.");
-       // }
-        User userWithDuplicateEmail = userDao.findByEmail(userDto.getEmail());
-        if(userWithDuplicateEmail != null && userDto.getId() != userWithDuplicateEmail.getId()) {
-            log.error(String.format("Duplicate email %", userDto.getEmail()));
+    public UserDto save(UserParam userParam) {
+        User userWithDuplicateEmail = userRepository.findByEmail(userParam.getEmail());
+        if(userWithDuplicateEmail != null && userParam.getId() != userWithDuplicateEmail.getId()) {
+            log.error(String.format("Duplicate email %s", userParam.getEmail()));
             throw new RuntimeException("Duplicate email.");
         }
         User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        if(userDto.getEmail().endsWith(emailDomainAuth)){
-            user.setRoles(roleDao.findRole(RoleType.ADMIN.name()));
+        user.setEmail(userParam.getEmail());
+        user.setFirstName(userParam.getFirstName());
+        user.setLastName(userParam.getLastName());
+        user.setPassword(passwordEncoder.encode(userParam.getPassword()));
+        if(userParam.getEmail().endsWith(emailDomainAuth)){
+            user.setRole(roleRepository.findRole(RoleType.EMPLOYEE.toString()));
         } else{
-            user.setRoles(roleDao.findRole(RoleType.EMPLOYEE.name()));
+            user.setRole(roleRepository.findRole(RoleType.USER.toString()));
         }
-        user.setAddress(userDto.getAddress());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setCity(userDto.getCity());
-        user.setActive(userDto.getActive());
-        userDao.save(user);
+        user.setAddress(userParam.getAddress());
+        user.setPhoneNumber(userParam.getPhoneNumber());
+        user.setCity(userParam.getCity());
+        user.setActive(false);
+        userRepository.save(user);
+        UserDto userDto = new UserDto();
+        modelMapper.map(user, userDto);
         return userDto;
     }
 }

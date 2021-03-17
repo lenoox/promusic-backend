@@ -1,20 +1,14 @@
 package com.lenoox.promusic.users.dtos;
 
-import com.lenoox.promusic.users.models.Role;
-
-import java.util.List;
-
 public class UserDto {
     private long id;
     private String firstName;
     private String lastName;
-    private String password;
     private String email;
     private String address;
     private String phoneNumber;
     private String city;
     private Boolean active;
-    private String role;
 
     public long getId() {
         return id;
@@ -38,14 +32,6 @@ public class UserDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {
@@ -86,13 +72,5 @@ public class UserDto {
 
     public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }
