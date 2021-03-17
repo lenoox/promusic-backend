@@ -1,5 +1,6 @@
 package com.lenoox.promusic.users.service.impl;
 
+import com.lenoox.promusic.common.exception.DuplicateException;
 import com.lenoox.promusic.common.models.RoleType;
 import com.lenoox.promusic.users.Param.UserParam;
 import com.lenoox.promusic.users.dtos.UserDto;
@@ -96,7 +97,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         User userWithDuplicateEmail = userRepository.findByEmail(userParam.getEmail());
         if(userWithDuplicateEmail != null && userParam.getId() != userWithDuplicateEmail.getId()) {
             log.error(String.format("Duplicate email %s", userParam.getEmail()));
-            throw new RuntimeException("Duplicate email.");
+            throw new DuplicateException(userParam.getEmail());
         }
         User user = new User();
         user.setEmail(userParam.getEmail());
