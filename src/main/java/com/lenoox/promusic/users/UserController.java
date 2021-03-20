@@ -25,14 +25,14 @@ public class UserController {
     @Autowired
     private AuthenticationFacadeService authenticationFacadeService;
 
-    @Secured({RoleType.Role.ROLE_EMPLOYEE})
+    @Secured({RoleType.Code.ROLE_EMPLOYEE})
     @GetMapping
     public ApiResponse getAll(){
         log.info(String.format("received request to list user %s", authenticationFacadeService.getAuthentication().getPrincipal()));
         return new ApiResponse(HttpStatus.OK, userService.getAll());
     }
 
-    @Secured({RoleType.Role.ROLE_EMPLOYEE, RoleType.Role.ROLE_USER})
+    @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
     @GetMapping(value = "/me")
     public ApiResponse getUser(){
         log.info(String.format("received request to update user %s", authenticationFacadeService.getAuthentication().getPrincipal()));
@@ -45,7 +45,7 @@ public class UserController {
         return new ApiResponse(HttpStatus.OK, userService.save(user));
     }
 
-    @Secured({RoleType.Role.ROLE_EMPLOYEE})
+    @Secured({RoleType.Code.ROLE_EMPLOYEE})
     @DeleteMapping(value = "/{id}")
     public ApiResponse delete(@PathVariable(value = "id") Long id){
         log.info(String.format("received request to delete user %s", authenticationFacadeService.getAuthentication().getPrincipal()));

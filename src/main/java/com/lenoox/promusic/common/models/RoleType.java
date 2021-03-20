@@ -1,12 +1,21 @@
 package com.lenoox.promusic.common.models;
 
-public enum RoleType {
-    EMPLOYEE(Role.ROLE_EMPLOYEE), USER(Role.ROLE_USER);
+import org.springframework.security.core.GrantedAuthority;
 
-    RoleType(String name) {
+public enum RoleType implements GrantedAuthority {
+    EMPLOYEE(Code.ROLE_EMPLOYEE),
+    USER(Code.ROLE_USER);
+
+    private final String authority;
+
+    RoleType(String authority) {
+        this.authority = authority;
     }
-
-    public static class Role {
+    @Override
+    public String getAuthority() {
+        return authority;
+    }
+    public static class Code {
         public static final String ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
         public static final String ROLE_USER = "ROLE_USER";
     }
