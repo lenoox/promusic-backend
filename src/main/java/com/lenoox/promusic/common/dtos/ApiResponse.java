@@ -1,7 +1,13 @@
 package com.lenoox.promusic.common.dtos;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
+@Getter
+@Setter
+@ToString
 public class ApiResponse {
 
     private HttpStatus status;
@@ -11,28 +17,6 @@ public class ApiResponse {
         this.status = status;
         this.result = result;
     }
-
-    public HttpStatus  getStatus() {
-        return status;
-    }
-
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
-
-    public Object getResult() {
-        return result;
-    }
-
-    public void setResult(Object result) {
-        this.result = result;
-    }
-
-    @Override
-    public String toString() {
-        return "ApiResponse [statusCode=" + status + ", result=" + result +"]";
-    }
-
 
 }
 
