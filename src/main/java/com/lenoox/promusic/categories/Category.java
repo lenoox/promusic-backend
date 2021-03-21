@@ -1,9 +1,16 @@
 package com.lenoox.promusic.categories;
 
-import lombok.Data;
-import javax.persistence.*;
+import com.lenoox.promusic.products.Product;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+import javax.persistence.*;
+import java.util.Set;
+
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -13,6 +20,8 @@ public class Category {
     private long id;
     @Column(name = "category_name")
     private String name;
-/*    @Column(name = "slug")
-    private String slug;*/
+    @Column(name = "slug")
+    private String slug;
+    @OneToMany(mappedBy="category")
+    private Set<Product> product;
 }

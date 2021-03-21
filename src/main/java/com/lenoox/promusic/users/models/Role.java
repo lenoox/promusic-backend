@@ -1,13 +1,16 @@
 package com.lenoox.promusic.users.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lenoox.promusic.common.models.RoleType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -15,12 +18,9 @@ public class Role {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "role_id")
     private long id;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role_name")
     private RoleType name;
-    @JsonIgnore
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="role",fetch=FetchType.EAGER)
     private Set<User> users;
 }

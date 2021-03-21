@@ -2,23 +2,27 @@ package com.lenoox.promusic.common.models;
 
 import com.lenoox.promusic.orders.model.Order;
 import com.lenoox.promusic.products.Product;
-import lombok.Data;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import javax.persistence.*;
-import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
-@Table(name = "orders")
-public class ProductOrder extends Auditable<String> implements Serializable {
+@Table(name = "product_order")
+public class ProductOrder {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "order_status_id")
+    @Column(name = "id")
     private long id;
     @Column(name = "quantity")
     private String quantity;
-/*    @Column(name = "product_id")
-    private Product product;
-    @Column(name = "order_id")
-    private Order order;*/
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    Product product;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    Order order;
 }

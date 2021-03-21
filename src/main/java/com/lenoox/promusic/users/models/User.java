@@ -1,20 +1,26 @@
 package com.lenoox.promusic.users.models;
 
 
-import com.lenoox.promusic.common.models.Auditable;
-import lombok.Data;
+import com.lenoox.promusic.common.models.AuditableTime;
+import com.lenoox.promusic.orders.model.Order;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends Auditable<String> implements Serializable {
+public class User extends AuditableTime implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private long id;
+    private Long id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
@@ -29,11 +35,13 @@ public class User extends Auditable<String> implements Serializable {
     private String city;
     @Column(name = "password")
     private String password;
-    @Column(name = "last_login")
-    private String lastLogin;
-    @ManyToOne()
-    @JoinColumn(name = "role_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name="role_id", nullable=false)
     private Role role;
     @Column(name = "active")
     private Boolean active;
+    @OneToMany(mappedBy="employee")
+    private Set<Order> orderEmployee;
+    @OneToMany(mappedBy="client")
+    private Set<Order> orderClient;
 }

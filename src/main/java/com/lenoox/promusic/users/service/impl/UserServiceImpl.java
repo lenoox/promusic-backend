@@ -5,7 +5,6 @@ import com.lenoox.promusic.common.models.RoleType;
 import com.lenoox.promusic.users.Param.UserParam;
 import com.lenoox.promusic.users.dtos.UserDto;
 import com.lenoox.promusic.users.dtos.UserWithRolesDTO;
-import com.lenoox.promusic.users.models.Role;
 
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.RoleRepository;
@@ -15,23 +14,17 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
 @Transactional
 @Service(value = "userService")
-public class UserServiceImpl implements UserDetailsService, UserService {
+public class UserServiceImpl implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private static final String emailDomainAuth = "@gmail.com";
@@ -48,28 +41,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if(user == null){
-            log.error("Invalid username or password.");
-            throw new UsernameNotFoundException("Invalid username or password.");
-        }
-        Set<GrantedAuthority> grantedAuthorities = getAuthorities(user);
-
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
-    }
-
-    private Set<GrantedAuthority> getAuthorities(User user) {
-
-        Role roleByUserId = user.getRole();
-        final Set<GrantedAuthority> authorities = roleByUserId.getUsers().stream().map(role ->{
-            log.info(role.getRole().getName().toString().toUpperCase());
-            return new SimpleGrantedAuthority("ROLE_" + role.getRole().getName().toString().toUpperCase());
-        }
-
-        ).collect(Collectors.toSet());
-        return authorities;
-    }
 
     public List<UserDto> getAll() {
         return userRepository
@@ -80,7 +51,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     public UserWithRolesDTO getByEamil(String email) {
-
         User user = userRepository.findByEmail(email);
         UserWithRolesDTO userWithRolesDTO = new UserWithRolesDTO();
         modelMapper.map(user, userWithRolesDTO);
