@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserWithRolesDTO extends UserDto{
-    private Role role;
+    private RoleDto role;
 }

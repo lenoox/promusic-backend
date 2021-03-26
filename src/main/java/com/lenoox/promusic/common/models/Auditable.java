@@ -1,6 +1,5 @@
 package com.lenoox.promusic.common.models;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -8,8 +7,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 
-@Getter(AccessLevel.PROTECTED)
-@Setter(AccessLevel.PROTECTED)
+@Getter()
+@Setter()
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class Auditable extends AuditableTime {

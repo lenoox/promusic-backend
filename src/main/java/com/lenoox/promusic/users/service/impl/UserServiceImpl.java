@@ -5,7 +5,6 @@ import com.lenoox.promusic.common.models.RoleType;
 import com.lenoox.promusic.users.Param.UserParam;
 import com.lenoox.promusic.users.dtos.UserDto;
 import com.lenoox.promusic.users.dtos.UserWithRolesDTO;
-
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.RoleRepository;
 import com.lenoox.promusic.users.repository.UserRepository;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Transactional
 @Service(value = "userService")
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto save(UserParam userParam) {
         User userWithDuplicateEmail = userRepository.findByEmail(userParam.getEmail());
-        if(userWithDuplicateEmail != null && userParam.getId() != userWithDuplicateEmail.getId()) {
+        if(userWithDuplicateEmail != null && userParam.getEmail() != userWithDuplicateEmail.getEmail()) {
             log.error(String.format("Duplicate email %s", userParam.getEmail()));
             throw new DuplicateException(userParam.getEmail());
         }
