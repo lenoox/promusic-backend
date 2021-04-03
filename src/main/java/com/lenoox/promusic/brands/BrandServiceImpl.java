@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,9 @@ public class BrandServiceImpl implements BrandService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private EntityManager em;
 
     @Override
     public List<BrandDto> getAll(Pageable paging) {
@@ -45,7 +49,8 @@ public class BrandServiceImpl implements BrandService {
     public BrandDto create(BrandParam brandParam) {
         Brand brand = new Brand();
         modelMapper.map(brandParam, brand);
-        brandRepository.save(brand);
+        Brand brandSaved = brandRepository.save(brand);
+        em.refresh(brandSaved);
         BrandDto brandDto = new BrandDto();
         modelMapper.map(brand, brandDto);
         return brandDto;
