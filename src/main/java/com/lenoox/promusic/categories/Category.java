@@ -1,6 +1,6 @@
 package com.lenoox.promusic.categories;
 
-import com.lenoox.promusic.common.utils.Slug;
+import com.github.slugify.Slugify;
 import com.lenoox.promusic.products.Product;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,8 +30,8 @@ public class Category {
 
     public void setSlug(String slug) {
         if(this.name != null && !this.name.isEmpty()){
-            Slug slugEntity = new Slug();
-            this.slug = slugEntity.makeSlug(this.name);
+            Slugify slg = new Slugify();
+            this.slug = slg.slugify(this.name);
         }
     }
 }

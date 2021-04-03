@@ -1,9 +1,9 @@
 package com.lenoox.promusic.products;
 
+import com.github.slugify.Slugify;
 import com.lenoox.promusic.brands.Brand;
 import com.lenoox.promusic.categories.Category;
 import com.lenoox.promusic.common.models.Auditable;
-import com.lenoox.promusic.common.utils.Slug;
 import com.lenoox.promusic.productorders.ProductOrder;
 import lombok.*;
 import javax.persistence.*;
@@ -47,8 +47,8 @@ public class Product extends Auditable implements Serializable {
 
     public void setSlug(String slug) {
         if(this.name != null && !this.name.isEmpty()){
-            Slug slugEntity = new Slug();
-            this.slug = slugEntity.makeSlug(this.name);
+            Slugify slg = new Slugify();
+            this.slug = slg.slugify(this.name);
         }
     }
 }
