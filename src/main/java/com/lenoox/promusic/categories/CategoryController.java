@@ -20,7 +20,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable){
+    public ResponseEntity<List<CategoryDto>> getAll(@PageableDefault(sort = "slug", page = 0, size = 10) Pageable pageable){
         return ResponseEntity.ok().body(categoryService.getAll(pageable));
     }
     @GetMapping(value = "/{id}")
