@@ -19,7 +19,7 @@ public class ProductDto {
     private String thumbnail;
     private CategoryDto category;
     private BrandDto brand;
-    private String ean_code;
+    private String eanCode;
     protected Long createdBy;
     protected Long lastModifiedBy;
     protected Instant createdDate;

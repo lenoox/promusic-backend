@@ -10,7 +10,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "orders")
+@Table(name = "order_status")
 public class Status  {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

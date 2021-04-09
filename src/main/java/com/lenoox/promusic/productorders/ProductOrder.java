@@ -1,4 +1,4 @@
-package com.lenoox.promusic.common.models;
+package com.lenoox.promusic.productorders;
 
 import com.lenoox.promusic.orders.model.Order;
 import com.lenoox.promusic.products.Product;
@@ -18,11 +18,11 @@ public class ProductOrder {
     @Column(name = "id")
     private long id;
     @Column(name = "quantity")
-    private String quantity;
-    @ManyToOne
+    private int quantity;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    Product product;
+    private Product product;
     @ManyToOne
     @JoinColumn(name = "order_id")
-    Order order;
+    private Order order;
 }

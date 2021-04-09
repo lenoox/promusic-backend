@@ -19,9 +19,10 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping
-    public ResponseEntity<List<ProductDto>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable){
-        return ResponseEntity.ok().body(productService.getAll(pageable));
+    @GetMapping()
+    public ResponseEntity<List<ProductDto>> getByCategory(@RequestParam(value="category") String category,
+                                                          @PageableDefault(page = 0, size = 10) Pageable pageable){
+        return ResponseEntity.ok().body(productService.getByCategory(category,pageable));
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductDto> getById(@PathVariable(value = "id") Long id){

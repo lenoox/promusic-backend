@@ -28,10 +28,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private EntityManager em;
 
-    @Override
-    public List<ProductDto> getAll(Pageable paging) {
+    public List<ProductDto> getByCategory(String category, Pageable paging) {
         return productRepository
-                .findAll(paging)
+                .findByCategory_slug(category,paging)
                 .stream()
                 .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());

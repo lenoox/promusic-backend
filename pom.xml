@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.lenoox</groupId>
-	<artifactId>promusic</artifactId>
+	<artifactId>promusic-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ProMusic</name>
+	<name>ProMusicDemo</name>
 	<description>Audio Equipment Shop</description>
 	<properties>
 		<java.version>1.8</java.version>

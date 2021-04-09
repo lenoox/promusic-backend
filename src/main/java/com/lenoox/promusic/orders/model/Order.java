@@ -1,7 +1,7 @@
 package com.lenoox.promusic.orders.model;
 
 import com.lenoox.promusic.common.models.AuditableTime;
-import com.lenoox.promusic.common.models.ProductOrder;
+import com.lenoox.promusic.productorders.ProductOrder;
 import com.lenoox.promusic.users.models.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,11 +30,11 @@ public class Order extends AuditableTime implements Serializable{
     @ManyToOne
     @JoinColumn(name="order_status_id", nullable=false)
     private Status status;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="employee_id", nullable=false)
     private User employee;
     @Column(name = "grand_total")
     private BigDecimal grandTotal;
-    @OneToMany(mappedBy = "order")
-    Set<ProductOrder> productOrder;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private Set<ProductOrder> productOrder;
 }

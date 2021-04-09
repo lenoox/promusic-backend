@@ -19,5 +19,5 @@ public class ProductParam {
     private String thumbnail;
     private CategoryDto category;
     private BrandDto brand;
-    private String ean_code;
+    private String eanCode;
 }
