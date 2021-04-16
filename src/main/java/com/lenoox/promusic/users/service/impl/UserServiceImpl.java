@@ -48,8 +48,8 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserWithRolesDTO getByEamil(String email) {
-        User user = userRepository.findByEmail(email);
+    public UserWithRolesDTO getByUsername(String email) {
+        User user = userRepository.findByUsername(email);
         UserWithRolesDTO userWithRolesDTO = new UserWithRolesDTO();
         modelMapper.map(user, userWithRolesDTO);
         return userWithRolesDTO;
@@ -62,17 +62,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserParam userParam) {
-        User userWithDuplicateEmail = userRepository.findByEmail(userParam.getEmail());
-        if(userWithDuplicateEmail != null && userParam.getEmail() != userWithDuplicateEmail.getEmail()) {
-            log.error(String.format("Duplicate email %s", userParam.getEmail()));
-            throw new DuplicateException(userParam.getEmail());
+        User userWithDuplicateEmail = userRepository.findByUsername(userParam.getUsername());
+        if(userWithDuplicateEmail != null && userParam.getUsername() != userWithDuplicateEmail.getUsername()) {
+            log.error(String.format("Duplicate email %s", userParam.getUsername()));
+            throw new DuplicateException(userParam.getUsername());
         }
         User user = new User();
-        user.setEmail(userParam.getEmail());
+        user.setUsername(userParam.getUsername());
         user.setFirstName(userParam.getFirstName());
         user.setLastName(userParam.getLastName());
         user.setPassword(passwordEncoder.encode(userParam.getPassword()));
-        if(userParam.getEmail().endsWith(emailDomainAuth)){
+        if(userParam.getUsername().endsWith(emailDomainAuth)){
             user.setRole(roleRepository.findRole(RoleType.EMPLOYEE.toString()));
         } else{
             user.setRole(roleRepository.findRole(RoleType.USER.toString()));

@@ -10,7 +10,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +25,7 @@ public class User extends AuditableTime implements Serializable {
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "email")
-    private String email;
+    private String username;
     @Column(name = "address")
     private String address;
     @Column(name = "phone_number")

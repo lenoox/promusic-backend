@@ -39,8 +39,8 @@ public class UserController {
     public ResponseEntity<UserWithRolesDTO> getUser(){
         log.info(String.format("received request to update user %s", authenticationFacadeService.getAuthentication().getPrincipal()));
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
-        String email = ((UserDetailsImpl) principal).getUser().getEmail();
-        return ResponseEntity.ok().body(userService.getByEamil(email));
+        String email = ((UserDetailsImpl) principal).getUser().getUsername();
+        return ResponseEntity.ok().body(userService.getByUsername(email));
     }
     @PostMapping
     public ResponseEntity<UserDto> create(@RequestBody UserParam user){
