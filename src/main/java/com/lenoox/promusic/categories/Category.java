@@ -19,7 +19,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "category_id")
-    private long id;
+    private Long id;
     @Column(name = "category_name")
     private String name;
     @Setter(AccessLevel.NONE)
@@ -28,7 +28,7 @@ public class Category {
     @OneToMany(mappedBy="category")
     private Set<Product> product;
 
-    public void setSlug(String slug) {
+    public void setSlug() {
         if(this.name != null && !this.name.isEmpty()){
             Slugify slg = new Slugify();
             this.slug = slg.slugify(this.name);

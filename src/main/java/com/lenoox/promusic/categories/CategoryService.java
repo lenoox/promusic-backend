@@ -9,5 +9,5 @@ public interface CategoryService {
     CategoryDto getById(Long id);
     CategoryDto create(CategoryParam brand);
     CategoryDto update(Long id, CategoryParam brand);
-    void delete(long id);
+    void delete(Long id);
 }

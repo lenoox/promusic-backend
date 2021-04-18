@@ -1,7 +1,6 @@
 package com.lenoox.promusic.categories;
 
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private CategoryMapper categoryMapper;
 
     @Autowired
     private EntityManager em;
@@ -34,40 +33,41 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository
                 .findAll(paging)
                 .stream()
-                .map(category -> modelMapper.map(category, CategoryDto.class))
+                .map(category -> categoryMapper.entityToDto(category))
                 .collect(Collectors.toList());
     }
     @Override
     public CategoryDto getById(Long id) {
-        Category category = categoryRepository.findById(id).get();
-        CategoryDto categoryDto = new CategoryDto();
-        modelMapper.map(category, categoryDto);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+        CategoryDto categoryDto = categoryMapper.entityToDto(category);
         return categoryDto;
     }
 
     @Override
     public CategoryDto create(CategoryParam categoryParam) {
-        Category category = new Category();
-        modelMapper.map(categoryParam, category);
+        Category category = categoryMapper.paramToEntity(categoryParam);
         Category categorySaved = categoryRepository.save(category);
         em.refresh(categorySaved);
-        CategoryDto categoryDto = new CategoryDto();
-        modelMapper.map(category, categoryDto);
+        CategoryDto categoryDto = categoryMapper.entityToDto(category);
         return categoryDto;
     }
     @Override
     public CategoryDto update(Long id,CategoryParam categoryParam) {
-        Category category= categoryRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(id));
-
-        modelMapper.map(categoryParam, category);
+        if (!categoryRepository.existsById(id)) {
+            throw new ResourceNotFoundException(id);
+        }
+        Category category = categoryMapper.paramToEntity(categoryParam);
+        category.setId(id);
         categoryRepository.save(category);
-        CategoryDto categoryDto = new CategoryDto();
-        modelMapper.map(category, categoryDto);
+        CategoryDto categoryDto = categoryMapper.entityToDto(category);
         return categoryDto;
     }
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new ResourceNotFoundException(id);
+        }
         categoryRepository.deleteById(id);
     }
 }

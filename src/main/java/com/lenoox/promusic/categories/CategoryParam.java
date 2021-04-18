@@ -1,9 +1,7 @@
 package com.lenoox.promusic.categories;
 
-
 import lombok.Getter;
 import lombok.Setter;
-
 
 @Getter
 @Setter
