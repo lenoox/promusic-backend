@@ -39,7 +39,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public BrandDto getById(Long id) {
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));;
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         BrandDto brandDto = brandMapper.entityToDto(brand);
         return brandDto;
     }
@@ -54,6 +54,9 @@ public class BrandServiceImpl implements BrandService {
     }
     @Override
     public BrandDto update(Long id,BrandParam brandParam) {
+        if (!brandRepository.existsById(id)) {
+            throw new ResourceNotFoundException(id);
+        }
         Brand brand = brandMapper.paramToEntity(brandParam);
         brand.setId(id);
         brandRepository.save(brand);
@@ -61,7 +64,10 @@ public class BrandServiceImpl implements BrandService {
         return brandDto;
     }
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
+        if (!brandRepository.existsById(id)) {
+            throw new ResourceNotFoundException(id);
+        }
         brandRepository.deleteById(id);
     }
 }

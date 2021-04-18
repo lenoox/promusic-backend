@@ -6,6 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BrandParam {
-    private Long id;
     private String name;
 }

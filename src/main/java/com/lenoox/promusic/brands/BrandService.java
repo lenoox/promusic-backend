@@ -9,5 +9,5 @@ public interface BrandService {
     BrandDto getById(Long id);
     BrandDto create(BrandParam brand);
     BrandDto update(Long id, BrandParam brand);
-    void delete(long id);
+    void delete(Long id);
 }
