@@ -1,7 +1,6 @@
 package com.lenoox.promusic.brands;
 
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class BrandServiceImpl implements BrandService {
     private BrandRepository brandRepository;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private BrandMapper brandMapper;
 
     @Autowired
     private EntityManager em;
@@ -34,36 +33,31 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository
                 .findAll(paging)
                 .stream()
-                .map(brand -> modelMapper.map(brand, BrandDto.class))
+                .map(brand -> brandMapper.entityToDto(brand))
                 .collect(Collectors.toList());
     }
     @Override
     public BrandDto getById(Long id) {
-        Brand brand = brandRepository.findById(id).get();
-        BrandDto brandDto = new BrandDto();
-        modelMapper.map(brand, brandDto);
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));;
+        BrandDto brandDto = brandMapper.entityToDto(brand);
         return brandDto;
     }
 
     @Override
     public BrandDto create(BrandParam brandParam) {
-        Brand brand = new Brand();
-        modelMapper.map(brandParam, brand);
+        Brand brand = brandMapper.paramToEntity(brandParam);
         Brand brandSaved = brandRepository.save(brand);
         em.refresh(brandSaved);
-        BrandDto brandDto = new BrandDto();
-        modelMapper.map(brand, brandDto);
+        BrandDto brandDto = brandMapper.entityToDto(brand);
         return brandDto;
     }
     @Override
     public BrandDto update(Long id,BrandParam brandParam) {
-        Brand brand= brandRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(id));
-
-        modelMapper.map(brandParam, brand);
+        Brand brand = brandMapper.paramToEntity(brandParam);
+        brand.setId(id);
         brandRepository.save(brand);
-        BrandDto brandDto = new BrandDto();
-        modelMapper.map(brand, brandDto);
+        BrandDto brandDto = brandMapper.entityToDto(brand);
         return brandDto;
     }
     @Override
