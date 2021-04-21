@@ -10,7 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 public class ProductDto {
-    private long id;
+    private Long id;
     private String name;
     private String slug;
     private int quantity;
@@ -20,8 +20,4 @@ public class ProductDto {
     private CategoryDto category;
     private BrandDto brand;
     private String eanCode;
-    protected Long createdBy;
-    protected Long lastModifiedBy;
-    protected Instant createdDate;
-    protected Instant lastModifiedDate;
 }

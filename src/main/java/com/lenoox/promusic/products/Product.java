@@ -20,7 +20,7 @@ public class Product extends Auditable implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private long id;
+    private Long id;
     @Column(name = "product_name")
     private String name;
     @Setter(AccessLevel.NONE)

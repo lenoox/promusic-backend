@@ -9,5 +9,5 @@ public interface ProductService {
     ProductDto getById(Long id);
     ProductDto create(ProductParam product);
     ProductDto update(Long id, ProductParam product);
-    void delete(long id);
+    void delete(Long id);
 }

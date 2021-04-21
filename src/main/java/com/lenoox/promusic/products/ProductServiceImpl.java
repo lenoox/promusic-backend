@@ -1,7 +1,6 @@
 package com.lenoox.promusic.products;
 
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private ProductMapper productMapper;
     @Autowired
     private EntityManager em;
 
@@ -32,41 +31,42 @@ public class ProductServiceImpl implements ProductService {
         return productRepository
                 .findByCategory_slug(category,paging)
                 .stream()
-                .map(product -> modelMapper.map(product, ProductDto.class))
+                .map(product -> productMapper.entityToDto(product))
                 .collect(Collectors.toList());
     }
-
     @Override
     public ProductDto getById(Long id) {
-        Product product = productRepository.findById(id).get();
-        ProductDto productDto = new ProductDto();
-        modelMapper.map(product, productDto);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+        ProductDto productDto = productMapper.entityToDto(product);
         return productDto;
     }
 
     @Override
     public ProductDto create(ProductParam productParam){
-        Product product = new Product();
-        modelMapper.map(productParam, product);
+        Product product = productMapper.paramToEntity(productParam);
         Product productSaved = productRepository.save(product);
         em.refresh(productSaved);
-        ProductDto productDto = new ProductDto();
-        modelMapper.map(productSaved, productDto);
+        ProductDto productDto = productMapper.entityToDto(productSaved);
         return productDto;
     }
 
     @Override
     public ProductDto update(Long id,ProductParam productParam) {
-        Product product = productRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(id));
-        modelMapper.map(productParam, product);
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException(id);
+        }
+        Product product = productMapper.paramToEntity(productParam);
+        product.setId(id);
         productRepository.save(product);
-        ProductDto productDto = new ProductDto();
-        modelMapper.map(product, productDto);
+        ProductDto productDto = productMapper.entityToDto(product);
         return productDto;
     }
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException(id);
+        }
         productRepository.deleteById(id);
     }
 }
