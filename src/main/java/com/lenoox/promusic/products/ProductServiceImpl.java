@@ -43,6 +43,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDto> getByIds(List<Long> ids) {
+        return productRepository.getAllProducts(ids).stream()
+                .map(product -> productMapper.entityToDto(product))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ProductDto create(ProductParam productParam){
         Product product = productMapper.paramToEntity(productParam);
         Product productSaved = productRepository.save(product);
