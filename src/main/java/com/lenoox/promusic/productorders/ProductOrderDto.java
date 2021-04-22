@@ -8,8 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductOrderDto {
-    private long id;
+    private Long id;
     private int quantity;
     private ProductDto product;
-    //private OrderDto order;
 }
