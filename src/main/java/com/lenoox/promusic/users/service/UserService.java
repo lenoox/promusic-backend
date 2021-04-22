@@ -10,5 +10,5 @@ public interface UserService {
     UserDto save(UserParam user);
     List<UserDto> getAll();
     UserWithRolesDTO getByUsername(String id);
-    void delete(long id);
+    void delete(Long id);
 }
