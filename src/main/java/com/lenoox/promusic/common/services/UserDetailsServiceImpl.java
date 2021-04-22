@@ -1,5 +1,6 @@
 package com.lenoox.promusic.common.services;
 
+import com.lenoox.promusic.common.exception.UserNotFoundException;
 import com.lenoox.promusic.users.models.Role;
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.UserRepository;
@@ -26,7 +27,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(email);
+        User user = userRepository.findByUsername(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
         if(user == null){
             log.error("Invalid username or password.");
             throw new UsernameNotFoundException("Invalid username or password.");

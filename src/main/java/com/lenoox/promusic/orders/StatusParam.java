@@ -1,12 +1,11 @@
-package com.lenoox.promusic.categories;
+package com.lenoox.promusic.orders;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryParam {
+public class StatusParam {
     private Long id;
     private String name;
-    private String slug;
 }

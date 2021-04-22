@@ -15,9 +15,9 @@ public class Status  {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "order_status_id")
-    private long id;
+    private Long id;
     @Column(name = "status_name")
-    private String note;
+    private String name;
     @OneToMany(mappedBy="status")
     private Set<Order> order;
 }

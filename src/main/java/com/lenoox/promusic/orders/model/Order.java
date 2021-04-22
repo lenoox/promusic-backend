@@ -21,7 +21,7 @@ public class Order extends AuditableTime implements Serializable{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "order_id")
-    private long id;
+    private Long id;
     @Column(name = "order_note")
     private String note;
     @ManyToOne
