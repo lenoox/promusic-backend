@@ -1,17 +1,17 @@
 package com.lenoox.promusic.orders;
 
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
+import com.lenoox.promusic.common.services.UserDetailsImpl;
 import com.lenoox.promusic.orders.dtos.OrderDto;
 import com.lenoox.promusic.orders.mapper.OrderMapper;
 import com.lenoox.promusic.orders.model.Order;
-import com.lenoox.promusic.productorders.*;
+import com.lenoox.promusic.users.service.AuthenticationFacadeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,23 +20,18 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
-
-
+    private final AuthenticationFacadeService authenticationFacadeService;
     private final OrderRepository orderRepository;
-    private final ProductOrderRepository productOrderRepository;
     private final OrderMapper orderMapper;
-    private final ProductOrderMapper productOrderMapper;
-    private EntityManager em;
+    private final EntityManager em;
 
-    public OrderServiceImpl(OrderRepository orderRepository,
-                            ProductOrderRepository productOrderRepository,
+    public OrderServiceImpl(AuthenticationFacadeService authenticationFacadeService,
+                            OrderRepository orderRepository,
                             OrderMapper orderMapper,
-                            ProductOrderMapper productOrderMapper,
                             EntityManager em) {
+        this.authenticationFacadeService = authenticationFacadeService;
         this.orderRepository = orderRepository;
-        this.productOrderRepository = productOrderRepository;
         this.orderMapper = orderMapper;
-        this.productOrderMapper = productOrderMapper;
         this.em = em;
     }
 
@@ -59,28 +54,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto create(OrderParam orderParam) {
-        Order order = orderMapper.paramToEntity(orderParam);
+        Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
+        String clientEmail = ((UserDetailsImpl) principal).getUser().getUsername();
+        Order order = orderMapper.paramToEntity(orderParam,clientEmail,null);
         Order orderSaved = orderRepository.save(order);
         em.refresh(orderSaved);
-
-        List<ProductOrder> productOrders = new ArrayList<>();
-        for(ProductOrderParam orderProductElement : orderParam.getProductOrder()){
-            ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement, orderSaved);
-            productOrders.add(productOrder);
-        }
-        List<ProductOrder> productOrderSaved = productOrderRepository.saveAll(productOrders);
-        for(ProductOrder orderProductElement : productOrderSaved) {
-            em.refresh(orderProductElement);
-        }
-
+        log.info("client {} create order",clientEmail);
         OrderDto orderDto = orderMapper.entityToDto(orderSaved);
-        List<ProductOrderDto> productOrderList = new ArrayList<>();
-        for(ProductOrder productOrderElement : productOrderSaved){
-            ProductOrderDto productOrderDto = productOrderMapper.entityToDto(productOrderElement);
-            productOrderList.add(productOrderDto);
-        }
-        orderDto.setProductOrder(productOrderList);
-
         return orderDto;
     }
     @Override
@@ -88,9 +68,12 @@ public class OrderServiceImpl implements OrderService {
         if (!orderRepository.existsById(id)) {
             throw new ResourceNotFoundException(id);
         }
-        Order order = orderMapper.paramToEntity(orderParam);
-        order.setId(id);
+        Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
+        String employeeEmail = ((UserDetailsImpl) principal).getUser().getUsername();
+        orderParam.setId(id);
+        Order order = orderMapper.paramToEntity(orderParam,null,employeeEmail);
         Order orderSaved = orderRepository.save(order);
+        log.info("employee {} updated order", employeeEmail);
         OrderDto orderDto = orderMapper.entityToDto(orderSaved);
         return orderDto;
     }

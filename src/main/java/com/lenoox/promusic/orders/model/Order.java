@@ -31,7 +31,7 @@ public class Order extends AuditableTime implements Serializable{
     @JoinColumn(name="order_status_id", nullable=false)
     private Status status;
     @ManyToOne()
-    @JoinColumn(name="employee_id", nullable=false)
+    @JoinColumn(name="employee_id")
     private User employee;
     @Column(name = "grand_total")
     private BigDecimal grandTotal;
