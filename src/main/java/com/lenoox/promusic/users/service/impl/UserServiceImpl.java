@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -56,15 +57,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserParam userParam) {
-        User userWithDuplicateEmail = userRepository.findByUsername(userParam.getUsername())
-                .orElseThrow(() -> new UserNotFoundException(userParam.getUsername()));;
-        if(userWithDuplicateEmail != null && userParam.getUsername() != userWithDuplicateEmail.getUsername()) {
+        Optional<User> userWithDuplicateEmail = userRepository.findByUsername(userParam.getUsername());
+        if(userWithDuplicateEmail.isPresent()){
             log.error(String.format("Duplicate email %s", userParam.getUsername()));
             throw new DuplicateException(userParam.getUsername());
         }
         User user = userMapper.paramToEntity(userParam,emailDomainAuth);
         User userSaved = userRepository.save(user);
-        UserDto userDto =  userMapper.entityToDto(userSaved);
+        UserDto userDto = userMapper.entityToDto(userSaved);
         return userDto;
     }
     @Override
