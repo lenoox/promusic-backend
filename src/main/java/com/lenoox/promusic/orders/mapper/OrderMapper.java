@@ -18,6 +18,8 @@ import com.lenoox.promusic.users.mapper.UserMapper;
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.UserRepository;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 @Component
@@ -57,17 +59,26 @@ public class OrderMapper {
                     .orElseThrow(() -> new ResourceNotFoundException(orderParam.getStatus().getId()));
             employeeUser = userRepository.findByUsername(employeeEmail)
                     .orElseThrow(() -> new UserNotFoundException(employeeEmail));
+            order.setGrandTotal(orderParam.getGrandTotal());
         } else{
             order.setNote(orderParam.getNote());
             clientUser = userRepository.findByUsername(clientEmail)
                     .orElseThrow(() -> new UserNotFoundException(clientEmail));
             status = statusRepository.findById(Long.valueOf(1))
                     .orElseThrow(() -> new ResourceNotFoundException(Long.valueOf(1)));
+            BigDecimal grandTotal = new BigDecimal(0);
+            for(ProductOrderParam orderProductElement : orderParam.getProductOrder()){
+                ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement,order);
+                BigDecimal b1 =  new BigDecimal(productOrder.getQuantity());
+                BigDecimal b2 =  productOrder.getProduct().getPrice();
+                BigDecimal grandCurrent = b1.multiply(b2);
+                grandTotal = grandTotal.add(grandCurrent);
+            }
+            order.setGrandTotal(grandTotal);
         }
         order.setClient(clientUser);
         order.setStatus(status);
         order.setEmployee(employeeUser);
-        order.setGrandTotal(orderParam.getGrandTotal());
         Set<ProductOrder> productOrders = new HashSet<>();
         for(ProductOrderParam orderProductElement : orderParam.getProductOrder()){
             ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement,order);

@@ -24,10 +24,6 @@ public class ProductController {
                                                           @PageableDefault(page = 0, size = 10) Pageable pageable){
         return ResponseEntity.ok().body(productService.getByCategory(category,pageable));
     }
-    @GetMapping(value = "/cart")
-    public ResponseEntity<List<ProductDto>> getByIds(@RequestParam(value = "ids") List<Long> ids){
-        return ResponseEntity.ok().body(productService.getByIds(ids));
-    }
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductDto> getById(@PathVariable(value = "id") Long id){
         return ResponseEntity.ok().body(productService.getById(id));

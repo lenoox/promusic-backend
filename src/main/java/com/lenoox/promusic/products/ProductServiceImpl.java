@@ -28,8 +28,18 @@ public class ProductServiceImpl implements ProductService {
     private EntityManager em;
 
     public List<ProductDto> getByCategory(String category, Pageable paging) {
-        return productRepository
-                .findByCategory_slug(category,paging)
+
+       List<Product> productList =
+               em.createNativeQuery(
+               " SELECT p.* FROM products p"+
+               " INNER JOIN categories c ON p.category_id = c.category_id"+
+               " WHERE c.slug = :category ORDER BY p.product_id ASC"
+               ,Product.class)
+               .setParameter("category", category)
+               .setFirstResult((int) paging.getOffset())
+               .setMaxResults(paging.getPageSize())
+               .getResultList();
+        return productList
                 .stream()
                 .map(product -> productMapper.entityToDto(product))
                 .collect(Collectors.toList());
@@ -40,13 +50,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException(id));
         ProductDto productDto = productMapper.entityToDto(product);
         return productDto;
-    }
-
-    @Override
-    public List<ProductDto> getByIds(List<Long> ids) {
-        return productRepository.getAllProducts(ids).stream()
-                .map(product -> productMapper.entityToDto(product))
-                .collect(Collectors.toList());
     }
 
     @Override

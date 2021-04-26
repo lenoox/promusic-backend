@@ -10,7 +10,4 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategory_slug(String slug, Pageable paging);
-
-    @Query("SELECT p FROM Product p WHERE p.id IN(:ids)")
-    List<Product> getAllProducts(@Param("ids") List<Long> ids);
 }
