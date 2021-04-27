@@ -1,5 +1,6 @@
 package com.lenoox.promusic.products;
 
+import com.lenoox.promusic.common.dtos.PageDto;
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Transactional
 @Service(value = "productService")
@@ -27,22 +27,27 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private EntityManager em;
 
-    public List<ProductDto> getByCategory(String category, Pageable paging) {
+    public PageDto<ProductDto> getByCategory(String category, Pageable paging) {
 
-       List<Product> productList =
-               em.createNativeQuery(
+        List<Product> productList = em.createNativeQuery(
                " SELECT p.* FROM products p"+
                " INNER JOIN categories c ON p.category_id = c.category_id"+
                " WHERE c.slug = :category ORDER BY p.product_id ASC"
                ,Product.class)
-               .setParameter("category", category)
-               .setFirstResult((int) paging.getOffset())
-               .setMaxResults(paging.getPageSize())
+                .setParameter("category", category)
+                .setFirstResult((int) paging.getOffset())
+                .setMaxResults(paging.getPageSize())
                .getResultList();
-        return productList
+        BigInteger productListCount = (BigInteger) em.createNativeQuery(
+                " SELECT COUNT(p.product_id) FROM products p"+
+                        " INNER JOIN categories c ON p.category_id = c.category_id"+
+                        " WHERE c.slug = :category")
+                .setParameter("category", category)
+                .getSingleResult();
+        return new PageDto<>(productList
                 .stream()
                 .map(product -> productMapper.entityToDto(product))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()), Long.valueOf(productListCount.intValue()));
     }
     @Override
     public ProductDto getById(Long id) {

@@ -35,15 +35,13 @@ public class OrderServiceImpl implements OrderService {
         this.orderMapper = orderMapper;
         this.em = em;
     }
-
-
     @Override
     public PageDto<OrderDto> getAll(Pageable paging) {
         Page<Order> orderPage = orderRepository.findAll(paging);
         return new PageDto(orderPage.getContent()
                 .stream()
                 .map(order -> orderMapper.entityToDto(order))
-                .collect(Collectors.toList()), orderPage.getTotalElements(), orderPage.getTotalPages());
+                .collect(Collectors.toList()), orderPage.getTotalElements());
     }
     @Override
     public OrderDto getById(Long id) {
@@ -52,7 +50,6 @@ public class OrderServiceImpl implements OrderService {
         OrderDto orderDto = orderMapper.entityToDto(order);
         return orderDto;
     }
-
     @Override
     public OrderDto create(OrderParam orderParam) {
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
