@@ -3,16 +3,17 @@ package com.lenoox.promusic.orders;
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
 import com.lenoox.promusic.common.services.UserDetailsImpl;
 import com.lenoox.promusic.orders.dtos.OrderDto;
+import com.lenoox.promusic.common.dtos.PageDto;
 import com.lenoox.promusic.orders.mapper.OrderMapper;
 import com.lenoox.promusic.orders.model.Order;
 import com.lenoox.promusic.users.service.AuthenticationFacadeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -37,12 +38,12 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<OrderDto> getAll(Pageable paging) {
-        return orderRepository
-                .findAll(paging)
+    public PageDto<OrderDto> getAll(Pageable paging) {
+        Page<Order> orderPage = orderRepository.findAll(paging);
+        return new PageDto(orderPage.getContent()
                 .stream()
                 .map(order -> orderMapper.entityToDto(order))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()), orderPage.getTotalElements(), orderPage.getTotalPages());
     }
     @Override
     public OrderDto getById(Long id) {
