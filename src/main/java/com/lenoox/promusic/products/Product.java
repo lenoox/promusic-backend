@@ -32,7 +32,6 @@ public class Product extends Auditable implements Serializable {
     private BigDecimal price;
     @Column(name = "description")
     private String description;
-    @Getter(AccessLevel.NONE)
     @Column(name = "thumbnail")
     private String thumbnail;
     @ManyToOne
@@ -46,9 +45,6 @@ public class Product extends Auditable implements Serializable {
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
     private Set<ProductOrder> productOrder;
 
-    public String getThumbnail() {
-        return "http://localhost:4200/assets/img/uploads/"+thumbnail;
-    }
     public void setSlug(String slug) {
         if(this.name != null && !this.name.isEmpty()){
             Slugify slg = new Slugify();
