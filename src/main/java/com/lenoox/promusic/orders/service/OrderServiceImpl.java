@@ -1,7 +1,11 @@
-package com.lenoox.promusic.orders;
+package com.lenoox.promusic.orders.service;
 
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
 import com.lenoox.promusic.common.services.UserDetailsImpl;
+import com.lenoox.promusic.orders.mapper.OrderStatusMapper;
+import com.lenoox.promusic.orders.param.OrderParam;
+import com.lenoox.promusic.orders.param.OrderStatusParam;
+import com.lenoox.promusic.orders.repository.OrderRepository;
 import com.lenoox.promusic.orders.dtos.OrderDto;
 import com.lenoox.promusic.common.dtos.PageDto;
 import com.lenoox.promusic.orders.mapper.OrderMapper;
@@ -21,19 +25,23 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+    private final EntityManager em;
     private final AuthenticationFacadeService authenticationFacadeService;
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final EntityManager em;
+    private final OrderStatusMapper orderStatusMapper;
 
-    public OrderServiceImpl(AuthenticationFacadeService authenticationFacadeService,
+
+    public OrderServiceImpl(EntityManager em,
+                            AuthenticationFacadeService authenticationFacadeService,
                             OrderRepository orderRepository,
                             OrderMapper orderMapper,
-                            EntityManager em) {
+                            OrderStatusMapper orderStatusMapper) {
+        this.em = em;
         this.authenticationFacadeService = authenticationFacadeService;
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
-        this.em = em;
+        this.orderStatusMapper = orderStatusMapper;
     }
     @Override
     public PageDto<OrderDto> getAll(Pageable paging) {
@@ -62,16 +70,17 @@ public class OrderServiceImpl implements OrderService {
         return orderDto;
     }
     @Override
-    public OrderDto update(Long id, OrderParam orderParam) {
+    public OrderDto changeStatusByOrder(Long id, OrderStatusParam statusParam) {
         if (!orderRepository.existsById(id)) {
             throw new ResourceNotFoundException(id);
         }
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
         String employeeEmail = ((UserDetailsImpl) principal).getUser().getUsername();
+        OrderParam orderParam = orderStatusMapper.orderStatusParamToOrderParam(statusParam);
         orderParam.setId(id);
-        Order order = orderMapper.paramToEntity(orderParam,null,employeeEmail);
+        Order order = orderMapper.paramToEntity(orderParam, null, employeeEmail);
         Order orderSaved = orderRepository.save(order);
-        log.info("employee {} updated order", employeeEmail);
+        log.info("employee {} updated status in order", employeeEmail);
         OrderDto orderDto = orderMapper.entityToDto(orderSaved);
         return orderDto;
     }

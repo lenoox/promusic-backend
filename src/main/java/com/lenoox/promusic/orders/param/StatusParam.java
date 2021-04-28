@@ -1,4 +1,4 @@
-package com.lenoox.promusic.orders;
+package com.lenoox.promusic.orders.param;
 
 import lombok.Getter;
 import lombok.Setter;

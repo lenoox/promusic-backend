@@ -2,6 +2,9 @@ package com.lenoox.promusic.orders;
 
 import com.lenoox.promusic.orders.dtos.OrderDto;
 import com.lenoox.promusic.common.dtos.PageDto;
+import com.lenoox.promusic.orders.param.OrderParam;
+import com.lenoox.promusic.orders.param.OrderStatusParam;
+import com.lenoox.promusic.orders.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +34,10 @@ public class OrderController {
     public ResponseEntity<OrderDto> create(@RequestBody OrderParam brand){
         return ResponseEntity.ok().body(brandService.create(brand));
     }
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<OrderDto> update(@PathVariable(value = "id") Long id,
-                                           @RequestBody OrderParam brand){
-        return ResponseEntity.ok().body(brandService.update(id,brand));
+    @PutMapping(value = "/{id}/status")
+    public ResponseEntity<OrderDto> changeStatusByOrder(@PathVariable(value = "id") Long id,
+                                                        @RequestBody OrderStatusParam orderStatusParam){
+        return ResponseEntity.ok().body(brandService.changeStatusByOrder(id, orderStatusParam));
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> delete(@PathVariable(value = "id") Long id){
