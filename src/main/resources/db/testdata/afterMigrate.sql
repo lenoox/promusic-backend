@@ -7,3 +7,7 @@ INSERT INTO public.order_status (order_status_id, status_name) VALUES (1,'Nowy')
 INSERT INTO public.order_status (order_status_id, status_name) VALUES (2,'Opłacony') ON CONFLICT DO NOTHING;
 INSERT INTO public.order_status (order_status_id, status_name) VALUES (3,'Wysłany') ON CONFLICT DO NOTHING;
 SELECT setval('order_status_order_status_id_seq', 3);
+INSERT INTO public.categories (category_id, category_name, slug) VALUES (1,'Słuchawki','sluchawki') ON CONFLICT DO NOTHING;
+INSERT INTO public.categories (category_id, category_name, slug) VALUES (2,'Mikrofony','mikrofony') ON CONFLICT DO NOTHING;
+INSERT INTO public.categories (category_id, category_name, slug) VALUES (3,'Interfejsy audio','interfejsy-audio') ON CONFLICT DO NOTHING;
+SELECT setval('order_status_order_status_id_seq', 3);
