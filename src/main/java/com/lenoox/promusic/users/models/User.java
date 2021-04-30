@@ -2,11 +2,11 @@ package com.lenoox.promusic.users.models;
 
 
 import com.lenoox.promusic.common.models.AuditableTime;
+import com.lenoox.promusic.common.utils.EncryptedStringConverter;
 import com.lenoox.promusic.orders.model.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -22,6 +22,7 @@ public class User extends AuditableTime implements Serializable {
     private Long id;
     @Column(name = "first_name")
     private String firstName;
+    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "email")
