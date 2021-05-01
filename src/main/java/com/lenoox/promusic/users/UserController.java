@@ -30,16 +30,19 @@ public class UserController {
     @Secured({RoleType.Code.ROLE_EMPLOYEE})
     @GetMapping
     public ResponseEntity<List<UserDto>> getAll(){
-        log.info(String.format("received request to list user %s", authenticationFacadeService.getAuthentication().getPrincipal()));
+        Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
+        String email = ((UserDetailsImpl) principal).getUser().getUsername();
+        log.info(String.format("received request to list user %s", email));
         return ResponseEntity.ok().body(userService.getAll());
     }
 
     @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
     @GetMapping(value = "/me")
     public ResponseEntity<UserWithRolesDTO> getUser(){
-        log.info(String.format("received request to update user %s", authenticationFacadeService.getAuthentication().getPrincipal()));
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
         String email = ((UserDetailsImpl) principal).getUser().getUsername();
+        log.info(String.format("received request user %s", email));
+
         return ResponseEntity.ok().body(userService.getByUsername(email));
     }
     @PostMapping

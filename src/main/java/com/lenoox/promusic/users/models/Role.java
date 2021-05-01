@@ -21,6 +21,6 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(name = "role_name")
     private RoleType name;
-    @OneToMany(mappedBy="role",fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="role")
     private Set<User> users;
 }

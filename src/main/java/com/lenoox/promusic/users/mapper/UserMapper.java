@@ -2,7 +2,6 @@ package com.lenoox.promusic.users.mapper;
 
 import com.lenoox.promusic.common.models.RoleType;
 import com.lenoox.promusic.users.Param.UserParam;
-import com.lenoox.promusic.users.dtos.RoleDto;
 import com.lenoox.promusic.users.dtos.UserDto;
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.RoleRepository;
@@ -32,9 +31,9 @@ public class UserMapper {
         user.setLastName(userParam.getLastName());
         user.setPassword(passwordEncoder.encode(userParam.getPassword()));
         if(userParam.getUsername().endsWith(emailDomainAuth)){
-            user.setRole(roleRepository.findRole(RoleType.EMPLOYEE.toString()));
+            user.setRole(roleRepository.getByRole(RoleType.EMPLOYEE.toString()));
         } else{
-            user.setRole(roleRepository.findRole(RoleType.USER.toString()));
+            user.setRole(roleRepository.getByRole(RoleType.USER.toString()));
         }
         user.setAddress(userParam.getAddress());
         user.setPhoneNumber(userParam.getPhoneNumber());

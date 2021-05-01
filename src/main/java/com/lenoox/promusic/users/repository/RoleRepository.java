@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface RoleRepository extends CrudRepository<Role, Long> {
 
-    @Query(value = "SELECT * FROM roles where role_name IN (:roles)", nativeQuery = true)
-    Role find(@Param("roles") List<String> roles);
-    @Query(value = "SELECT * FROM roles where role_name = :role", nativeQuery = true)
-    Role findRole(@Param("role") String role);
+    @Query(value = "SELECT r.* FROM roles r where r.role_name IN (:roles)", nativeQuery = true)
+    Role getByRoles(@Param("roles") List<String> roles);
+    @Query(value = "SELECT r.* FROM roles r where r.role_name = :role", nativeQuery = true)
+    Role getByRole(@Param("role") String role);
 
 }
 

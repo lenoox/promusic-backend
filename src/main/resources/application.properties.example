@@ -6,4 +6,5 @@ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 spring.jpa.show-sql=true
 spring.jpa.hibernate.ddl-auto=validate
 spring.flyway.locations=classpath:/db/migration
-security.data-encryption=adamus
+spring.data.web.pageable.one-indexed-parameters=true
+security.data-encryption.encryptionKey=

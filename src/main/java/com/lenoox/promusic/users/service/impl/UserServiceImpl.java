@@ -2,7 +2,6 @@ package com.lenoox.promusic.users.service.impl;
 
 import com.lenoox.promusic.common.exception.DuplicateException;
 import com.lenoox.promusic.common.exception.UserNotFoundException;
-import com.lenoox.promusic.common.models.RoleType;
 import com.lenoox.promusic.users.Param.UserParam;
 import com.lenoox.promusic.users.dtos.UserDto;
 import com.lenoox.promusic.users.dtos.UserWithRolesDTO;
@@ -11,11 +10,9 @@ import com.lenoox.promusic.users.mapper.UserWithRolesMapper;
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.UserRepository;
 import com.lenoox.promusic.users.service.UserService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserWithRolesDTO getByUsername(String email) {
-        User user = userRepository.findByUsername(email)
+        User user = userRepository.getUserByUsername(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
         UserWithRolesDTO userWithRolesDTO = userWithRolesMapper.entityToDto(user);
 
@@ -57,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserParam userParam) {
-        Optional<User> userWithDuplicateEmail = userRepository.findByUsername(userParam.getUsername());
+        Optional<User> userWithDuplicateEmail = userRepository.getUsername(userParam.getUsername());
         if(userWithDuplicateEmail.isPresent()){
             log.error(String.format("Duplicate email %s", userParam.getUsername()));
             throw new DuplicateException(userParam.getUsername());

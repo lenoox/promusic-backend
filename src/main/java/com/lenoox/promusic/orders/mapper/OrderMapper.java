@@ -56,18 +56,18 @@ public class OrderMapper {
             order.setNote(orderSaved.getNote());
             order.setCreatedDate(orderSaved.getCreatedDate());
             Order finalOrderSaved = orderSaved;
-            clientUser = userRepository.findByUsername(orderSaved.getClient().getUsername())
+            clientUser = userRepository.getUserByUsername(orderSaved.getClient().getUsername())
                     .orElseThrow(() -> new UserNotFoundException(finalOrderSaved.getClient().getUsername()));
             status = statusRepository.findById(orderParam.getStatus().getId())
                     .orElseThrow(() -> new ResourceNotFoundException(orderParam.getStatus().getId()));
             log.info(employeeEmail);
-            employeeUser = userRepository.findByUsername(employeeEmail)
+            employeeUser = userRepository.getUserByUsername(employeeEmail)
                     .orElseThrow(() -> new UserNotFoundException(employeeEmail));
             order.setGrandTotal(orderSaved.getGrandTotal());
             order.setProductOrder(orderSaved.getProductOrder());
         } else{
             order.setNote(orderParam.getNote());
-            clientUser = userRepository.findByUsername(clientEmail)
+            clientUser = userRepository.getUserByUsername(clientEmail)
                     .orElseThrow(() -> new UserNotFoundException(clientEmail));
             status = statusRepository.findById(Long.valueOf(1))
                     .orElseThrow(() -> new ResourceNotFoundException(Long.valueOf(1)));

@@ -21,15 +21,19 @@ public class User extends AuditableTime implements Serializable {
     @Column(name = "user_id")
     private Long id;
     @Column(name = "first_name")
-    private String firstName;
     @Convert(converter = EncryptedStringConverter.class)
+    private String firstName;
     @Column(name = "last_name")
+    @Convert(converter = EncryptedStringConverter.class)
     private String lastName;
     @Column(name = "email")
+    @Convert(converter = EncryptedStringConverter.class)
     private String username;
     @Column(name = "address")
+    @Convert(converter = EncryptedStringConverter.class)
     private String address;
     @Column(name = "phone_number")
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNumber;
     @Column(name = "city")
     private String city;

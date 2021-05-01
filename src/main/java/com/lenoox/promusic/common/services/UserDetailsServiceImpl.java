@@ -14,9 +14,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import javax.transaction.Transactional;
+
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@Transactional
 @Service(value = "userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -27,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(email)
+        User user = userRepository.getUserByUsername(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
         if(user == null){
             log.error("Invalid username or password.");
@@ -38,7 +40,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user, grantedAuthorities);
     }
     public Set<GrantedAuthority> getAuthorities(User user) {
-
         Role roleByUserId = user.getRole();
         final Set<GrantedAuthority> authorities = roleByUserId
                 .getUsers()
