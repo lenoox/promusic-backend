@@ -5,6 +5,7 @@ import com.lenoox.promusic.common.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,14 @@ public class ProductServiceImpl implements ProductService {
                 .stream()
                 .map(product -> productMapper.entityToDto(product))
                 .collect(Collectors.toList()), Long.valueOf(productListCount.intValue()));
+    }
+    @Override
+    public PageDto<ProductDto> getAll(Pageable paging) {
+        Page<Product> productPage = productRepository.findAll(paging);
+        return new PageDto(productPage.getContent()
+                .stream()
+                .map(product -> productMapper.entityToDto(product))
+                .collect(Collectors.toList()), productPage.getTotalElements());
     }
     @Override
     public ProductDto getById(Long id) {
