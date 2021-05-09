@@ -22,4 +22,12 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
     public final ResponseEntity<ErrorResponse> handleUserNotFoundException(DuplicateException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(ex.getMessage()));
     }
+    @ExceptionHandler(PasswordIncorrectException.class)
+    public final ResponseEntity<ErrorResponse> passwordIncorrectException(PasswordIncorrectException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
+    }
+    @ExceptionHandler(OutOfStockException.class)
+    public final ResponseEntity<ErrorResponse> outOfStockException(OutOfStockException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
+    }
 }

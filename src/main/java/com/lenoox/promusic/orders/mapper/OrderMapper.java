@@ -60,7 +60,6 @@ public class OrderMapper {
                     .orElseThrow(() -> new UserNotFoundException(finalOrderSaved.getClient().getUsername()));
             status = statusRepository.findById(orderParam.getStatus().getId())
                     .orElseThrow(() -> new ResourceNotFoundException(orderParam.getStatus().getId()));
-            log.info(employeeEmail);
             employeeUser = userRepository.getUserByUsername(employeeEmail)
                     .orElseThrow(() -> new UserNotFoundException(employeeEmail));
             order.setGrandTotal(orderSaved.getGrandTotal());
@@ -73,7 +72,7 @@ public class OrderMapper {
                     .orElseThrow(() -> new ResourceNotFoundException(Long.valueOf(1)));
             BigDecimal grandTotal = new BigDecimal(0);
             for(ProductOrderParam orderProductElement : orderParam.getProductOrder()){
-                ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement,order);
+                ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement,order,true);
                 BigDecimal b1 =  new BigDecimal(productOrder.getQuantity());
                 BigDecimal b2 =  productOrder.getProduct().getPrice();
                 BigDecimal grandCurrent = b1.multiply(b2);
@@ -82,7 +81,7 @@ public class OrderMapper {
             order.setGrandTotal(grandTotal);
             Set<ProductOrder> productOrders = new HashSet<>();
             for(ProductOrderParam orderProductElement : orderParam.getProductOrder()){
-                ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement,order);
+                ProductOrder productOrder = productOrderMapper.paramToEntity(orderProductElement,order,false);
                 productOrders.add(productOrder);
             }
             order.setProductOrder(productOrders);

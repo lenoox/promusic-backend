@@ -1,11 +1,14 @@
 package com.lenoox.promusic.users.service.impl;
 
 import com.lenoox.promusic.common.exception.DuplicateException;
+import com.lenoox.promusic.common.exception.PasswordIncorrectException;
 import com.lenoox.promusic.common.exception.UserNotFoundException;
 import com.lenoox.promusic.users.Param.UserParam;
+import com.lenoox.promusic.users.Param.UserPasswordParam;
 import com.lenoox.promusic.users.dtos.UserDto;
 import com.lenoox.promusic.users.dtos.UserWithRolesDTO;
 import com.lenoox.promusic.users.mapper.UserMapper;
+import com.lenoox.promusic.users.mapper.UserPasswordMapper;
 import com.lenoox.promusic.users.mapper.UserWithRolesMapper;
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.UserRepository;
@@ -13,6 +16,7 @@ import com.lenoox.promusic.users.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +38,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
+    private UserPasswordMapper userPasswordMapper;
+    @Autowired
     private UserWithRolesMapper userWithRolesMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public List<UserDto> getAll() {
         return userRepository
@@ -59,10 +70,33 @@ public class UserServiceImpl implements UserService {
             log.error(String.format("Duplicate email %s", userParam.getUsername()));
             throw new DuplicateException(userParam.getUsername());
         }
-        User user = userMapper.paramToEntity(userParam,emailDomainAuth);
+        User user = userMapper.paramToEntity(userParam,emailDomainAuth,false);
         User userSaved = userRepository.save(user);
         UserDto userDto = userMapper.entityToDto(userSaved);
         return userDto;
+    }
+    @Override
+    public UserDto update(String email, UserParam userParam) {
+        if (!userRepository.getUsername(email).isPresent()) {
+            throw new UserNotFoundException(email);
+        }
+        User user = userMapper.paramToEntity(userParam,email,true);
+        User userSaved = userRepository.save(user);
+        UserDto userDto = userMapper.entityToDto(userSaved);
+        return userDto;
+    }
+    @Override
+    public Boolean updatePassword(UserPasswordParam userPasswordParam,String email) {
+        User userSaved = userRepository.getUserByUsername(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        boolean passwordmatches = passwordEncoder.matches(userPasswordParam.getOldPassword(), userSaved.getPassword());
+        if(passwordmatches){
+            User user = userPasswordMapper.paramToEntity(userSaved, userPasswordParam);
+            userRepository.save(user);
+            return true;
+        } else{
+            throw new PasswordIncorrectException();
+        }
     }
     @Override
     public void delete(Long id) {

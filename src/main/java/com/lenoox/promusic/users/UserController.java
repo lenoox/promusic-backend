@@ -3,6 +3,7 @@ package com.lenoox.promusic.users;
 import com.lenoox.promusic.common.models.RoleType;
 import com.lenoox.promusic.common.services.UserDetailsImpl;
 import com.lenoox.promusic.users.Param.UserParam;
+import com.lenoox.promusic.users.Param.UserPasswordParam;
 import com.lenoox.promusic.users.dtos.UserDto;
 import com.lenoox.promusic.users.dtos.UserWithRolesDTO;
 import com.lenoox.promusic.users.service.AuthenticationFacadeService;
@@ -50,7 +51,20 @@ public class UserController {
         log.info("received request to create user");
         return ResponseEntity.ok().body(userService.save(user));
     }
-
+    @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
+    @PutMapping(value = "/me")
+    public ResponseEntity<UserDto> update(@RequestBody UserParam user){
+        Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
+        String email = ((UserDetailsImpl) principal).getUser().getUsername();
+        return ResponseEntity.ok().body(userService.update(email,user));
+    }
+    @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
+    @PutMapping(value = "/me/password")
+    public ResponseEntity<Boolean> updatePassword(@RequestBody UserPasswordParam userPasswordParam){
+        Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
+        String email = ((UserDetailsImpl) principal).getUser().getUsername();
+        return ResponseEntity.ok().body(userService.updatePassword(userPasswordParam,email));
+    }
     @Secured({RoleType.Code.ROLE_EMPLOYEE})
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> delete(@PathVariable(value = "id") Long id){

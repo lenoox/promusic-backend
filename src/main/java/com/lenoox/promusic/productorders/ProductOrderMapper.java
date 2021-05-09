@@ -1,5 +1,6 @@
 package com.lenoox.promusic.productorders;
 
+import com.lenoox.promusic.common.exception.OutOfStockException;
 import com.lenoox.promusic.common.exception.ResourceNotFoundException;
 import com.lenoox.promusic.orders.model.Order;
 import com.lenoox.promusic.products.Product;
@@ -20,11 +21,19 @@ public class ProductOrderMapper {
     }
 
 
-    public ProductOrder paramToEntity(ProductOrderParam productOrderParam, Order orderSaved) {
+    public ProductOrder paramToEntity(ProductOrderParam productOrderParam, Order orderSaved, Boolean updateQuantity) {
         ProductOrder productOrder = new ProductOrder();
         productOrder.setOrder(orderSaved);
         Product product = productRepository.findById(productOrderParam.getProduct().getId())
                 .orElseThrow(() -> new ResourceNotFoundException(productOrderParam.getProduct().getId()));
+        if(updateQuantity){
+            int quantitAfterOrder = product.getQuantity()-productOrderParam.getQuantity();
+            if(quantitAfterOrder >= 0){
+                product.setQuantity(quantitAfterOrder);
+            } else{
+                throw new OutOfStockException(product.getBrand().getName() + " " +product.getName());
+            }
+        }
         productOrder.setProduct(product);
         productOrder.setQuantity(productOrderParam.getQuantity());
         return productOrder;
