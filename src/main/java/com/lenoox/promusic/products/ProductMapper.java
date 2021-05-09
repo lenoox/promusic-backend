@@ -18,21 +18,30 @@ public class ProductMapper {
     private final CategoryMapper categoryMapper;
     private final BrandRepository brandRepository;
     private final BrandMapper brandMapper;
+    private final ProductRepository productRepository;
 
     public ProductMapper(
             CategoryRepository categoryRepository,
             BrandRepository brandRepository,
             CategoryMapper categoryMapper,
-            BrandMapper brandMapper) {
+            BrandMapper brandMapper,
+            ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
         this.categoryMapper = categoryMapper;
         this.brandMapper = brandMapper;
+        this.productRepository = productRepository;
     }
 
     public Product paramToEntity(ProductParam productParam) {
-
         Product product = new Product();
+        if(productParam.getId()!=null){
+            Product productSaved = productRepository.findById(productParam.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(productParam.getCategory().getId()));
+            product.setId(productSaved.getId());
+            product.setCreatedBy(productSaved.getCreatedBy());
+            product.setCreatedDate(productSaved.getCreatedDate());
+        }
         product.setName(productParam.getName());
         product.setSlug(productParam.getSlug());
         product.setQuantity(productParam.getQuantity());
@@ -46,6 +55,7 @@ public class ProductMapper {
                 .orElseThrow(() -> new ResourceNotFoundException(productParam.getBrand().getId()));
         product.setBrand(brand);
         product.setEanCode(productParam.getEanCode());
+
         return product;
     }
 

@@ -80,8 +80,9 @@ public class ProductServiceImpl implements ProductService {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException(id);
         }
+        productParam.setId(id);
         Product product = productMapper.paramToEntity(productParam);
-        product.setId(id);
+
         productRepository.save(product);
         ProductDto productDto = productMapper.entityToDto(product);
         return productDto;
