@@ -23,11 +23,11 @@ public class ProMusicApplication {
 	}
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
-		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+		/*KeyGenerator keyGen = KeyGenerator.getInstance("AES");
 		keyGen.init(256);
 		SecretKey secretKey = keyGen.generateKey();
 		String encoded = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-		log.info(encoded);
+		log.info(encoded);*/
 		SpringApplication.run(ProMusicApplication.class, args);
 	}
 

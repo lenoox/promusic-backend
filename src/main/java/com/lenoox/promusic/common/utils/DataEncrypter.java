@@ -1,5 +1,6 @@
 package com.lenoox.promusic.common.utils;
 
+import com.lenoox.promusic.common.config.DataEncrypterConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.BadPaddingException;

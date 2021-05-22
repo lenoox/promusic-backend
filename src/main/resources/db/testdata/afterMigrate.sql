@@ -2,19 +2,21 @@ INSERT INTO public.brands (brand_id,brand_name) VALUES (1,'TSPV') ON CONFLICT DO
 INSERT INTO public.brands (brand_id,brand_name) VALUES (2,'DHQForMusic') ON CONFLICT DO NOTHING;
 INSERT INTO public.brands (brand_id,brand_name) VALUES (3,'PRTU-X') ON CONFLICT DO NOTHING;
 INSERT INTO public.brands (brand_id,brand_name) VALUES (4,'YourHighSoundXK') ON CONFLICT DO NOTHING;
-SELECT setval('brands_brand_id_seq', 4);
+SELECT setval('brands_brand_id_seq', (SELECT MAX(brand_id) FROM public.brands) + 1, false);
+
 INSERT INTO public.order_status (order_status_id, status_name) VALUES (1,'Nowy') ON CONFLICT DO NOTHING;
 INSERT INTO public.order_status (order_status_id, status_name) VALUES (2,'Opłacony') ON CONFLICT DO NOTHING;
 INSERT INTO public.order_status (order_status_id, status_name) VALUES (3,'Wysłany') ON CONFLICT DO NOTHING;
-SELECT setval('order_status_order_status_id_seq', 3);
+SELECT setval('order_status_order_status_id_seq', (SELECT MAX(order_status_id) FROM public.order_status) + 1, false);
+
 INSERT INTO public.categories (category_id, category_name, slug) VALUES (1,'Słuchawki','sluchawki') ON CONFLICT DO NOTHING;
 INSERT INTO public.categories (category_id, category_name, slug) VALUES (2,'Mikrofony','mikrofony') ON CONFLICT DO NOTHING;
 INSERT INTO public.categories (category_id, category_name, slug) VALUES (3,'Interfejsy audio','interfejsy-audio') ON CONFLICT DO NOTHING;
-SELECT setval('categories_category_id_seq', 3);
+SELECT setval('categories_category_id_seq', (SELECT MAX(category_id) FROM public.categories) + 1, false);
 
-INSERT INTO public.users (user_id, first_name, last_name, email, address, phone_number, city, created_date, last_modified_date, password, role_id, active) VALUES (1, 'aYc5dlxGqjq035SLYeimmA==', 'yRMawhXC7X3WANqAeJCHNg==', 'MKx5D4+hYcHBJYl/izGYxzGXcwGN2kV6Y89kUqNxins=', 'vYb616HhNprV06/OlctUf+EVN/82BHYvLoIc/V0Wqzk=', 'No/lWzrEfwR2CsFHGbgbhA==', 'Wrocław', '2021-05-09 18:20:03.355759', '2021-05-09 18:20:03.355759', '$2a$10$kL06iVmHdcGk8gwlrBibgu3fhbkryMRlb4P6zDF8AmdfcNgqOQuEi', 2, true) ON CONFLICT DO NOTHING;
-INSERT INTO public.users (user_id, first_name, last_name, email, address, phone_number, city, created_date, last_modified_date, password, role_id, active) VALUES (2, '24BhFolGPPKkgvVuKh9Qcg==', 'st6FUjic88189k4F6vumLg==', 'luoV1I3+3ynQvMFxTUyTptqEJG4Uc6ZSjGW7EAGLsaE=', 'UxCKE6zZ6aRxjoQBO0hASx+BBVIKX3cW/XgIUsgZr8k=', 'RXBP5x3QCWlYkflvux3xxA==', 'Warszawa', '2021-05-09 19:33:18.408003', '2021-05-09 19:33:18.408003', '$2a$10$qtIHeI1SlcWYUeoZ7MuIN.O6SjuvwbJYzD1xQ7aQEs81tDost6h9O', 1, true) ON CONFLICT DO NOTHING;
-SELECT setval('users_user_id_seq', 2);
+INSERT INTO public.users (user_id, first_name, last_name, email, address, phone_number, city, created_date, last_modified_date, password, role_id, active) VALUES (1, 'aYc5dlxGqjq035SLYeimmA==', 'yRMawhXC7X3WANqAeJCHNg==', 'MKx5D4+hYcHBJYl/izGYxygLGMDPkA873MkaE4an1eo=', 'vYb616HhNprV06/OlctUf+EVN/82BHYvLoIc/V0Wqzk=', 'l6GDvHDrazgmKud9PYy0YA==', 'Wrocław', '2021-05-22 23:47:16.783896', '2021-05-22 23:47:16.783896', '$2a$10$qjx.3LaWFHlx3aNDgBdInuMGO6kZ1lh2f/W8SFDEE2FPttmmgPWmC', 2, true);
+INSERT INTO public.users (user_id, first_name, last_name, email, address, phone_number, city, created_date, last_modified_date, password, role_id, active) VALUES (2, '24BhFolGPPKkgvVuKh9Qcg==', 'st6FUjic88189k4F6vumLg==', 'luoV1I3+3ynQvMFxTUyTptqEJG4Uc6ZSjGW7EAGLsaE=', 'UxCKE6zZ6aRxjoQBO0hASx+BBVIKX3cW/XgIUsgZr8k=', 'RXBP5x3QCWlYkflvux3xxA==', 'Warszawa', '2021-05-09 19:33:18.408003', '2021-05-09 19:33:18.408003', '$2a$10$qtIHeI1SlcWYUeoZ7MuIN.O6SjuvwbJYzD1xQ7aQEs81tDost6h9O', 1, true);
+SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM public.users) + 1, false);
 
 INSERT INTO public.products (product_id, product_name, slug, quantity, price, description, thumbnail, category_id, brand_id, ean_code, created_date, last_modified_date, created_by, last_modified_by) VALUES (1, 'TR-1000', 'tr-1000', 5, 400.00, '<p>Typ: wokółuszne</p><p>Pasmo przenoszenia: 5HZ - 40 000HZ</p><p>Impedancja:&nbsp;250 Ohm</p><p>Konstrukcja: Otwarte</p>', 'https://cdn.pixabay.com/photo/2017/08/06/02/49/headphones-2588056_960_720.jpg', 1, 1, '19830554', '2021-05-09 18:37:53.284504', '2021-05-09 18:37:53.284504', 1, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.products (product_id, product_name, slug, quantity, price, description, thumbnail, category_id, brand_id, ean_code, created_date, last_modified_date, created_by, last_modified_by) VALUES (2, 'V-160', 'v-160', 7, 99.00, '<p>Typ: wokółuszne</p><p>Pasmo przenoszenia: 20HZ - 20 000HZ</p><p>Impedancja:&nbsp;32 Ohm</p><p>Konstrukcja: zamknięte</p>', 'https://cdn.pixabay.com/photo/2018/09/17/14/27/headphones-3683983_960_720.jpg', 1, 1, '72550309', '2021-05-09 18:39:19.089747', '2021-05-09 19:16:12.589251', 1, 1) ON CONFLICT DO NOTHING;
@@ -27,8 +29,12 @@ INSERT INTO public.products (product_id, product_name, slug, quantity, price, de
 INSERT INTO public.products (product_id, product_name, slug, quantity, price, description, thumbnail, category_id, brand_id, ean_code, created_date, last_modified_date, created_by, last_modified_by) VALUES (9, 'TP-2100', 'tp-2100', 3, 949.00, '<p>Próbkowanie: 192 kHz / 24 bity</p><p>Pasmo przenoszenia: 30 ~ 16000 Hz</p><p>Kompatybilność: Windows, Mac OS</p>', 'https://cdn.pixabay.com/photo/2016/03/09/10/45/microphone-1246057_960_720.jpg', 2, 2, '32172812', '2021-05-09 19:02:37.883776', '2021-05-09 19:02:37.883776', 1, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.products (product_id, product_name, slug, quantity, price, description, thumbnail, category_id, brand_id, ean_code, created_date, last_modified_date, created_by, last_modified_by) VALUES (10, 'BTR20', 'btr20', 10, 299.00, '<p>Ilość kanałów: 2 IN / 2 OUT</p><p>Kompatybilność: Windows, Mac OS</p>', 'https://cdn.pixabay.com/photo/2020/12/22/20/49/behringer-5853293_960_720.jpg', 3, 3, '16242706', '2021-05-09 19:04:30.283867', '2021-05-09 19:04:30.283867', 1, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.products (product_id, product_name, slug, quantity, price, description, thumbnail, category_id, brand_id, ean_code, created_date, last_modified_date, created_by, last_modified_by) VALUES (11, 'TR-200', 'tr-200', 20, 179.00, '<p>Typ: wokółuszne</p><p>Pasmo przenoszenia: 10HZ - 35 000HZ</p><p>Impedancja:&nbsp;80 Ohm</p><p>Konstrukcja: Otwarte</p>', 'https://cdn.pixabay.com/photo/2016/11/18/13/53/black-1834689_960_720.jpg', 1, 1, '03917896', '2021-05-09 19:21:40.601139', '2021-05-09 19:21:40.601139', 1, 1) ON CONFLICT DO NOTHING;
-SELECT setval('products_product_id_seq', 11);
+SELECT setval('products_product_id_seq', (SELECT MAX(product_id) FROM public.products) + 1, false);
 
+INSERT INTO public.orders (order_id, order_note, client_id, order_status_id, employee_id, created_date, last_modified_date, grand_total) VALUES (1, 'Prośba o szybką dostawę.', 2, 1, null, '2021-05-22 21:25:41.108504', '2021-05-22 21:25:41.108504', 1507.00) ON CONFLICT DO NOTHING;
+SELECT setval('orders_order_id_seq', (SELECT MAX(order_id) FROM public.orders) + 1, false);
 
-INSERT INTO public.orders (order_id, order_note, client_id, order_status_id, employee_id, created_date, last_modified_date, grand_total) VALUES (1, 'Prośba o szybką dostawę', 2, 1, null, '2021-05-09 19:44:47.138365', '2021-05-09 19:44:47.138365', 948.00) ON CONFLICT DO NOTHING;
-SELECT setval('orders_order_id_seq', 1);
+INSERT INTO public.product_order (id, quantity, product_id, order_id) VALUES (1, 1, 5, 1) ON CONFLICT DO NOTHING;
+INSERT INTO public.product_order (id, quantity, product_id, order_id) VALUES (2, 1, 4, 1) ON CONFLICT DO NOTHING;
+INSERT INTO public.product_order (id, quantity, product_id, order_id) VALUES (3, 1, 8, 1) ON CONFLICT DO NOTHING;
+SELECT setval('product_order_id_seq', (SELECT MAX(id) FROM public.product_order) + 1, false);

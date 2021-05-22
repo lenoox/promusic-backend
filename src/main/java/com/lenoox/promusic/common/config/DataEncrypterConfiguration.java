@@ -1,4 +1,4 @@
-package com.lenoox.promusic.common.utils;
+package com.lenoox.promusic.common.config;
 
 import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,10 +9,10 @@ import java.util.Objects;
 @ConfigurationProperties(prefix = "security.data-encryption")
 @ConstructorBinding
 @Value
-class DataEncrypterConfiguration {
+public class DataEncrypterConfiguration {
     EncryptionKey encryptionKey;
     @Value
-    static class EncryptionKey {
+    public static class EncryptionKey {
         byte[] value;
         public EncryptionKey(String value) {
             Objects.requireNonNull(value);
