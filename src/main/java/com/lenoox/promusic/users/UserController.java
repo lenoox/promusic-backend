@@ -27,8 +27,6 @@ public class UserController {
 
     @Autowired
     private AuthenticationFacadeService authenticationFacadeService;
-
-    @Secured({RoleType.Code.ROLE_EMPLOYEE})
     @GetMapping
     public ResponseEntity<List<UserDto>> getAll(){
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
@@ -36,8 +34,11 @@ public class UserController {
         log.info(String.format("received request to list user %s", email));
         return ResponseEntity.ok().body(userService.getAll());
     }
-
-    @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
+    @PostMapping()
+    public ResponseEntity<UserDto> create(@RequestBody UserParam user){
+        log.info("received request to create user");
+        return ResponseEntity.ok().body(userService.save(user));
+    }
     @GetMapping(value = "/me")
     public ResponseEntity<UserWithRolesDTO> getUser(){
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
@@ -46,26 +47,19 @@ public class UserController {
 
         return ResponseEntity.ok().body(userService.getByUsername(email));
     }
-    @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody UserParam user){
-        log.info("received request to create user");
-        return ResponseEntity.ok().body(userService.save(user));
-    }
-    @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
+
     @PutMapping(value = "/me")
     public ResponseEntity<UserDto> update(@RequestBody UserParam user){
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
         String email = ((UserDetailsImpl) principal).getUser().getUsername();
         return ResponseEntity.ok().body(userService.update(email,user));
     }
-    @Secured({RoleType.Code.ROLE_EMPLOYEE, RoleType.Code.ROLE_USER})
     @PutMapping(value = "/me/password")
     public ResponseEntity<Boolean> updatePassword(@RequestBody UserPasswordParam userPasswordParam){
         Object principal = authenticationFacadeService.getAuthentication().getPrincipal();
         String email = ((UserDetailsImpl) principal).getUser().getUsername();
         return ResponseEntity.ok().body(userService.updatePassword(userPasswordParam,email));
     }
-    @Secured({RoleType.Code.ROLE_EMPLOYEE})
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> delete(@PathVariable(value = "id") Long id){
         log.info(String.format("received request to delete user %s", authenticationFacadeService.getAuthentication().getPrincipal()));
