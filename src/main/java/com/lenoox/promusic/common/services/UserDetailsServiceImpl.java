@@ -1,7 +1,6 @@
 package com.lenoox.promusic.common.services;
 
 import com.lenoox.promusic.common.exception.UserNotFoundException;
-import com.lenoox.promusic.users.models.Role;
 import com.lenoox.promusic.users.models.User;
 import com.lenoox.promusic.users.repository.UserRepository;
 import com.lenoox.promusic.users.service.impl.UserServiceImpl;
@@ -16,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Transactional
@@ -40,17 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user, grantedAuthorities);
     }
     public Set<GrantedAuthority> getAuthorities(User user) {
-        Role roleByUserId = user.getRole();
-        final Set<GrantedAuthority> authorities = roleByUserId
-                .getUsers()
-                .stream()
-                .map(role -> {
-                return new SimpleGrantedAuthority("ROLE_" + role.
-                        getRole().
-                        getName().
-                        toString().toUpperCase());
-            }
-         ).collect(Collectors.toSet());
-        return authorities;
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().toString().toUpperCase());
+        return Collections.singleton(grantedAuthority);
     }
 }
