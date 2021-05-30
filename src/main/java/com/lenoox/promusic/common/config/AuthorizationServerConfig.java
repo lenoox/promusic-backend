@@ -3,6 +3,7 @@ package com.lenoox.promusic.common.config;
 
 import com.lenoox.promusic.common.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +22,9 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    private static final String CLIEN_ID = "devglan-client";
-    private static final String CLIENT_SECRET = "$2a$04$e/c1/RfsWuThaWFCrcCuJeoyvwCV0URN/6Pn9ZFlrtIWaU/vj/BfG";
+    private static final String CLIEN_ID = "pro-music-user";
+    @Value("${oauth.authorization.client.secret}")
+    private String client_secret;
     private static final String GRANT_TYPE_PASSWORD = "password";
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String REFRESH_TOKEN = "refresh_token";
@@ -30,8 +32,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private static final String SCOPE_READ = "read";
     private static final String SCOPE_WRITE = "write";
     private static final String TRUST = "trust";
-    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 8*60*60;
-    private static final int REFRESH_TOKEN_VALIDITY_SECONDS = 24*60*60;
+    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 12*60*60;
+    private static final int REFRESH_TOKEN_VALIDITY_SECONDS = 7*24*60*60;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -65,11 +67,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         configurer
                 .inMemory()
                 .withClient(CLIEN_ID)
-                .secret(CLIENT_SECRET)
+                .secret(client_secret)
                 .authorizedGrantTypes(GRANT_TYPE_PASSWORD, AUTHORIZATION_CODE, REFRESH_TOKEN, IMPLICIT )
                 .scopes(SCOPE_READ, SCOPE_WRITE, TRUST)
                 .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
-                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS);;
+                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS);
     }
 
     @Override

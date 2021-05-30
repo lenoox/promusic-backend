@@ -9,3 +9,4 @@ spring.flyway.locations=classpath:/db/migration,classpath:/db/testdata
 spring.data.web.pageable.one-indexed-parameters=true
 security.data-encryption.encryptionKey=zsyVulKYrEAzfl+fCzIEECWGoyUk0J2LhfawQC6UoJU=
 email.domain.auth=@promusic.local
+oauth.authorization.client.secret=$2a$04$5FUun3By38g7Cr7Twrg9F.uoBCybB.gqqxrCVStzjTxgE6UbKBbwS
