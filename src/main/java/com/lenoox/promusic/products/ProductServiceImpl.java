@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,24 +31,24 @@ public class ProductServiceImpl implements ProductService {
 
     public PageDto<ProductDto> getByCategory(String category, Pageable paging) {
 
-        List<Product> productList = em.createNativeQuery(
+        Query productsToList = em.createNativeQuery(
                " SELECT p.* FROM products p"+
                " INNER JOIN categories c ON p.category_id = c.category_id"+
                " WHERE c.slug = :category ORDER BY p.product_id ASC"
                ,Product.class)
                 .setParameter("category", category)
                 .setFirstResult((int) paging.getOffset())
-                .setMaxResults(paging.getPageSize())
-               .getResultList();
+                .setMaxResults(paging.getPageSize());
+        List<?> list = productsToList.getResultList();
         BigInteger productListCount = (BigInteger) em.createNativeQuery(
                 " SELECT COUNT(p.product_id) FROM products p"+
                         " INNER JOIN categories c ON p.category_id = c.category_id"+
                         " WHERE c.slug = :category")
                 .setParameter("category", category)
                 .getSingleResult();
-        return new PageDto<>(productList
+        return new PageDto<>(list
                 .stream()
-                .map(product -> productMapper.entityToDto(product))
+                .map(product -> product instanceof Product ? productMapper.entityToDto((Product) product) : null )
                 .collect(Collectors.toList()), Long.valueOf(productListCount.intValue()));
     }
     @Override
