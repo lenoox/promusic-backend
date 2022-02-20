@@ -33,6 +33,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${email.domain.auth}")
     private String emailDomainAuth;
+    @Value("${register.active}")
+    private Boolean registerActive;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -65,15 +67,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserParam userParam) {
-        Optional<User> userWithDuplicateEmail = userRepository.getUsername(userParam.getUsername());
-        if(userWithDuplicateEmail.isPresent()){
-            log.error(String.format("Duplicate email %s", userParam.getUsername()));
-            throw new DuplicateException(userParam.getUsername());
+        if(registerActive){
+            Optional<User> userWithDuplicateEmail = userRepository.getUsername(userParam.getUsername());
+            if(userWithDuplicateEmail.isPresent()){
+                log.error(String.format("Duplicate email %s", userParam.getUsername()));
+                throw new DuplicateException(userParam.getUsername());
+            }
+            User user = userMapper.paramToEntity(userParam,emailDomainAuth,false);
+            User userSaved = userRepository.save(user);
+            UserDto userDto = userMapper.entityToDto(userSaved);
+            return userDto;
+        } else {
+            throw new PasswordIncorrectException();
         }
-        User user = userMapper.paramToEntity(userParam,emailDomainAuth,false);
-        User userSaved = userRepository.save(user);
-        UserDto userDto = userMapper.entityToDto(userSaved);
-        return userDto;
     }
     @Override
     public UserDto update(String email, UserParam userParam) {

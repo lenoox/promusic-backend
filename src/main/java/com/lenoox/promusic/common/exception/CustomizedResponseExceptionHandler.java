@@ -30,4 +30,8 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
     public final ResponseEntity<ErrorResponse> outOfStockException(OutOfStockException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
     }
+    @ExceptionHandler(RegistrationDisabledException.class)
+    public final ResponseEntity<ErrorResponse> registrationDisabledException(RegistrationDisabledException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
+    }
 }

@@ -1,0 +1,137 @@
+name: promusic-backend
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  testing-code-build:
+    name: 'Testing code build'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: promusic
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v1
+      - name: 'Set up JDK 8'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: "Maven Test"
+        env:
+          DATABASE_URL: jdbc:postgresql://localhost:5432/promusic
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: postgres
+          EMAIL_DOMAIN_AUTH: ${{ secrets.EMAIL_DOMAIN_AUTH }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          OAUTH_SECRET: ${{ secrets.OAUTH_SECRET }}
+          PROFILE_ACTIVE: prod
+          CORS_HOST: http://localhost:4200
+        run: mvn -B clean test
+  deploy-test:
+    name: 'Deploy TEST Server'
+    runs-on: ubuntu-latest
+    needs: [testing-code-build]
+    env:
+      IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}-test:latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v2'
+      - name: 'Auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: 'Authorize Docker push'
+        run: 'gcloud auth configure-docker --quiet'
+      - name: 'Build Docker image'
+        run: 'docker build . -t $IMAGE_NAME'
+      - name: 'Test Docker image'
+        run: 'docker run -d -p 80:80 $IMAGE_NAME'
+      - name: 'Push Docker image'
+        run: 'docker push $IMAGE_NAME'
+      - name: 'Deploy Docker image'
+        run: |
+          gcloud run deploy ${{ secrets.GCP_APP_NAME }}-test \
+          --image $IMAGE_NAME \
+          --region ${{ secrets.GCP_REGION}} \
+          --platform managed \
+          --min-instances ${{ secrets.GCP_MIN_INSTANCES }} \
+          --max-instances ${{ secrets.GCP_MAX_INSTANCES }} \
+          --concurrency ${{ secrets.GCP_CONCURRENCY }} \
+          --port 8080 \
+          --cpu ${{ secrets.GCP_CPU }} \
+          --memory ${{ secrets.GCP_MEMORY }} \
+          --allow-unauthenticated \
+          --set-env-vars=DATABASE_URL='${{ secrets.DB_TEST_URL }}' \
+          --set-env-vars=DATABASE_USERNAME='${{ secrets.DB_TEST_USERNAME }}' \
+          --set-env-vars=DATABASE_PASSWORD='${{ secrets.DB_TEST_PASSWORD }}' \
+          --set-env-vars=EMAIL_DOMAIN_AUTH='${{ secrets.EMAIL_DOMAIN_AUTH }}' \
+          --set-env-vars=ENCRYPTION_KEY='${{ secrets.ENCRYPTION_KEY }}' \
+          --set-env-vars=OAUTH_SECRET='${{ secrets.OAUTH_SECRET }}' \
+          --set-env-vars=PROFILE_ACTIVE=test \
+          --set-env-vars=CORS_HOST='${{ secrets.CORS_TEST_HOST }}'
+
+  deploy-prod:
+    name: 'Deploy PROD Server'
+    runs-on: ubuntu-latest
+    needs: [testing-code-build]
+    env:
+      IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}:latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v2'
+      - name: 'Auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: 'Authorize Docker push'
+        run: 'gcloud auth configure-docker --quiet'
+      - name: 'Build Docker image'
+        run: 'docker build . -t $IMAGE_NAME'
+      - name: 'Test Docker image'
+        run: 'docker run -d -p 80:80 $IMAGE_NAME'
+      - name: 'Push Docker image'
+        run: 'docker push $IMAGE_NAME'
+      - name: 'Deploy Docker image'
+        run: |
+          gcloud run deploy ${{ secrets.GCP_APP_NAME }} \
+          --image $IMAGE_NAME \
+          --region ${{ secrets.GCP_REGION}} \
+          --platform managed \
+          --min-instances ${{ secrets.GCP_MIN_INSTANCES }} \
+          --max-instances ${{ secrets.GCP_MAX_INSTANCES }} \
+          --concurrency ${{ secrets.GCP_CONCURRENCY }} \
+          --port 8080 \
+          --cpu ${{ secrets.GCP_CPU }} \
+          --memory ${{ secrets.GCP_MEMORY }} \
+          --allow-unauthenticated \
+          --set-env-vars=DATABASE_URL='${{ secrets.DB_PROD_URL }}' \
+          --set-env-vars=DATABASE_USERNAME='${{ secrets.DB_PROD_USERNAME }}' \
+          --set-env-vars=DATABASE_PASSWORD='${{ secrets.DB_PROD_PASSWORD }}' \
+          --set-env-vars=EMAIL_DOMAIN_AUTH='${{ secrets.EMAIL_DOMAIN_AUTH }}' \
+          --set-env-vars=ENCRYPTION_KEY='${{ secrets.ENCRYPTION_KEY }}' \
+          --set-env-vars=OAUTH_SECRET='${{ secrets.OAUTH_SECRET }}' \
+          --set-env-vars=PROFILE_ACTIVE=prod \
+          --set-env-vars=CORS_HOST='${{ secrets.CORS_PROD_HOST }}'
