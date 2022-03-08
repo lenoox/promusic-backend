@@ -2,6 +2,7 @@ package com.lenoox.promusic.users.service.impl;
 
 import com.lenoox.promusic.common.exception.DuplicateException;
 import com.lenoox.promusic.common.exception.PasswordIncorrectException;
+import com.lenoox.promusic.common.exception.DemoActiveException;
 import com.lenoox.promusic.common.exception.UserNotFoundException;
 import com.lenoox.promusic.users.Param.UserParam;
 import com.lenoox.promusic.users.Param.UserPasswordParam;
@@ -33,8 +34,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${email.domain.auth}")
     private String emailDomainAuth;
-    @Value("${register.active}")
-    private Boolean registerActive;
+    @Value("${demo.active}")
+    private Boolean demoActive;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -67,7 +68,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserParam userParam) {
-        if(registerActive){
+        if(demoActive){
+            throw new DemoActiveException();
+        } else {
             Optional<User> userWithDuplicateEmail = userRepository.getUsername(userParam.getUsername());
             if(userWithDuplicateEmail.isPresent()){
                 log.error(String.format("Duplicate email %s", userParam.getUsername()));
@@ -77,8 +80,6 @@ public class UserServiceImpl implements UserService {
             User userSaved = userRepository.save(user);
             UserDto userDto = userMapper.entityToDto(userSaved);
             return userDto;
-        } else {
-            throw new PasswordIncorrectException();
         }
     }
     @Override
@@ -93,15 +94,19 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public Boolean updatePassword(UserPasswordParam userPasswordParam,String email) {
-        User userSaved = userRepository.getUserByUsername(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
-        boolean passwordmatches = passwordEncoder.matches(userPasswordParam.getOldPassword(), userSaved.getPassword());
-        if(passwordmatches){
-            User user = userPasswordMapper.paramToEntity(userSaved, userPasswordParam);
-            userRepository.save(user);
-            return true;
-        } else{
-            throw new PasswordIncorrectException();
+        if(demoActive){
+            throw new DemoActiveException();
+        } else {
+            User userSaved = userRepository.getUserByUsername(email)
+                    .orElseThrow(() -> new UserNotFoundException(email));
+            boolean passwordmatches = passwordEncoder.matches(userPasswordParam.getOldPassword(), userSaved.getPassword());
+            if(passwordmatches){
+                User user = userPasswordMapper.paramToEntity(userSaved, userPasswordParam);
+                userRepository.save(user);
+                return true;
+            } else{
+                throw new PasswordIncorrectException();
+            }
         }
     }
     @Override
