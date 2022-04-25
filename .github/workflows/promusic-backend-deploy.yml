@@ -68,8 +68,8 @@ jobs:
           --image $IMAGE_NAME \
           --region ${{ secrets.GCP_REGION}} \
           --platform managed \
-          --min-instances ${{ secrets.GCP_MIN_INSTANCES }} \
-          --max-instances ${{ secrets.GCP_MAX_INSTANCES }} \
+          --min-instances ${{ secrets.GCP_TEST_MIN_INSTANCES }} \
+          --max-instances ${{ secrets.GCP_TEST_MAX_INSTANCES }} \
           --concurrency ${{ secrets.GCP_CONCURRENCY }} \
           --port 8080 \
           --cpu ${{ secrets.GCP_CPU }} \
@@ -117,8 +117,8 @@ jobs:
           --image $IMAGE_NAME \
           --region ${{ secrets.GCP_REGION}} \
           --platform managed \
-          --min-instances ${{ secrets.GCP_MIN_INSTANCES }} \
-          --max-instances ${{ secrets.GCP_MAX_INSTANCES }} \
+          --min-instances ${{ secrets.GCP_PROD_MIN_INSTANCES }} \
+          --max-instances ${{ secrets.GCP_PROD_MAX_INSTANCES }} \
           --concurrency ${{ secrets.GCP_CONCURRENCY }} \
           --port 8080 \
           --cpu ${{ secrets.GCP_CPU }} \
